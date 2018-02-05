@@ -2,6 +2,7 @@
 using System;
 using TwoWaySyncClient.DB;
 using TwoWaySync.DomainModel;
+using TwoWaySync.DomainModel.Models;
 
 namespace TwoWaySyncClient
 {

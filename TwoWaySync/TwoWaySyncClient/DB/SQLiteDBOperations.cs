@@ -1,11 +1,12 @@
 ﻿using SQLite;
 using System.Collections.Generic;
 using System.Linq;
+using TwoWaySync.DomainModel.Models;
 using TwoWaySyncClient.Models;
 
 namespace TwoWaySyncClient.DB
 {
-    public class SQLiteDBOperations<T> : IDBOperations<T> where T : new()
+    public class SQLiteDBOperations<T> : IDBOperations<T> where T : ISyncBaseModel, new()
     {
         public string _DBPath;
 

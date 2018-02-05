@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Enums\DBTypeEnum.cs" />
     <Compile Include="Models\APIModel.cs" />
+    <Compile Include="Models\ISyncBaseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
