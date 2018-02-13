@@ -8,6 +8,6 @@ namespace TwoWaySync.DomainModel
 
         public DateTime LastSyncDate { get; set; }
 
-        public string Type { get; set; }
+        public string TableName { get; set; }
     }
 }

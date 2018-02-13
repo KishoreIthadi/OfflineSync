@@ -1,8 +1,9 @@
 ﻿using System.Threading.Tasks;
 using System;
 using TwoWaySyncClient.DB;
-using TwoWaySync.DomainModel;
 using TwoWaySync.DomainModel.Models;
+using System.Collections.Generic;
+using TwoWaySyncClient.Enums;
 
 namespace TwoWaySyncClient
 {
@@ -12,9 +13,9 @@ namespace TwoWaySyncClient
         private string _token;
         private string _baseURL;
 
-        IDBOperations<T> _dBOperations;
+        IDBOperations _dBOperations;
 
-        public Sync(string databasePath, string baseURL, string token, DBTypeEnum dbType)
+        public Sync(string databasePath, string baseURL, string token, DBTypeEnum dbType = DBTypeEnum.SQLite)
         {
             _DBPath = databasePath;
             _baseURL = baseURL;
@@ -22,8 +23,8 @@ namespace TwoWaySyncClient
 
             switch (dbType)
             {
-                case TwoWaySync.DomainModel.DBTypeEnum.SQLServer:
-                    _dBOperations = new SQLiteDBOperations<T>(databasePath);
+                case DBTypeEnum.SQLite:
+                    _dBOperations = new SQLiteDBOperations(databasePath);
                     break;
             }
         }
@@ -32,12 +33,14 @@ namespace TwoWaySyncClient
         {
             try
             {
-                APIModel model = new APIModel();
-                model.Data = _dBOperations.GetData();
+                IDBOperations operations = new SQLiteDBOperations(_DBPath);
+                var settings = operations.GetSyncSettingByTable(typeof(T).Name);
+
+                string data = "?lastSyncDate=" + settings.LastSyncedAt + "&data=" + settings.ControllerData;
 
                 SyncAPI syncAPI = new SyncAPI(_baseURL, _token);
 
-                APIModel res = await syncAPI.Post<APIModel, APIModel>(model, "Sync");
+                List<T> res = await syncAPI.Get<List<T>>(settings.ControllerName + data);
             }
             catch (Exception ex)
             {

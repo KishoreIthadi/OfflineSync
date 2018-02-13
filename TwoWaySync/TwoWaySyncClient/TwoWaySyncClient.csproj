@@ -63,6 +63,8 @@
     <Compile Include="API.cs" />
     <Compile Include="DB\IDBOperations.cs" />
     <Compile Include="DB\SQLiteDBOperations.cs" />
+    <Compile Include="Enums\DBTypeEnum.cs" />
+    <Compile Include="Enums\OveridePriority.cs" />
     <Compile Include="Models\SyncSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sync.cs" />

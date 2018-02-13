@@ -1,13 +1,18 @@
 ﻿using System;
-using TwoWaySync.DomainModel.Models;
+using TwoWaySyncClient.Enums;
 
 namespace TwoWaySyncClient.Models
 {
-    internal class SyncSettings : ISyncBaseModel
+    public class SyncSettings
     {
-        public string ID { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ModifiedAt { get; set; }
-        public bool IsActive { get; set; }
+        public string TableName { get; set; }
+        public string ControllerName { get; set; }
+        public string ControllerData { get; set; }
+        public string ServerTableName { get; set; }
+        public bool AutoSync { get; set; }
+        public DateTime? LastSyncedAt { get; set; }
+        public OveridePriority priority { get; set; }
     }
 }

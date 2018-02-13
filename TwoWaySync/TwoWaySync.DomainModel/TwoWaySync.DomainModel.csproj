@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\DBTypeEnum.cs" />
     <Compile Include="Models\APIModel.cs" />
     <Compile Include="Models\ISyncBaseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
