@@ -62,7 +62,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TwoWaySync.DomainModel\TwoWaySync.DomainModel.csproj">
+    <ProjectReference Include="..\OfflineSync.DomainModel\OfflineSync.DomainModel.csproj">
       <Project>{63D1BE27-F298-4399-9226-CAC3A8B1C1DB}</Project>
       <Name>TwoWaySync.DomainModel</Name>
     </ProjectReference>

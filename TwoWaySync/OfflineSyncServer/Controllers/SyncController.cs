@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
-using TwoWaySync.DomainModel;
+using OfflineSync.DomainModel;
 
-namespace TwoWaySyncServer.Controllers
+namespace OfflineSyncServer.Controllers
 {
     public class SyncController : ApiController
     {

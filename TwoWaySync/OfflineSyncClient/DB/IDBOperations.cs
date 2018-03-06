@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using TwoWaySync.DomainModel.Models;
-using TwoWaySyncClient.Models;
+using OfflineSync.DomainModel.Models;
+using OfflineSyncClient.Models;
 
-namespace TwoWaySyncClient.DB
+namespace OfflineSyncClient.DB
 {
     public interface IDBOperations
     {

@@ -1,10 +1,10 @@
 ﻿using SQLite;
 using System.Collections.Generic;
 using System.Linq;
-using TwoWaySync.DomainModel.Models;
-using TwoWaySyncClient.Models;
+using OfflineSync.DomainModel.Models;
+using OfflineSyncClient.Models;
 
-namespace TwoWaySyncClient.DB
+namespace OfflineSyncClient.DB
 {
     public class SQLiteDBOperations : IDBOperations
     {

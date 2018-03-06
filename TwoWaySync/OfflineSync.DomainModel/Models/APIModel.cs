@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwoWaySync.DomainModel
+namespace OfflineSync.DomainModel
 {
     public class APIModel
     {

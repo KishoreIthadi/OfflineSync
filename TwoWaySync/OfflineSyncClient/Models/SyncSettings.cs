@@ -1,7 +1,7 @@
 ﻿using System;
-using TwoWaySyncClient.Enums;
+using OfflineSyncClient.Enums;
 
-namespace TwoWaySyncClient.Models
+namespace OfflineSyncClient.Models
 {
     public class SyncSettings
     {

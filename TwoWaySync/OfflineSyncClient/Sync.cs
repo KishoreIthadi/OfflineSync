@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System;
-using TwoWaySyncClient.DB;
-using TwoWaySync.DomainModel.Models;
+using OfflineSyncClient.DB;
+using OfflineSync.DomainModel.Models;
 using System.Collections.Generic;
-using TwoWaySyncClient.Enums;
+using OfflineSyncClient.Enums;
 
-namespace TwoWaySyncClient
+namespace OfflineSyncClient
 {
     public class Sync<T> where T : ISyncBaseModel, new()
     {

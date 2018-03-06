@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TwoWaySync.DomainModel.Models
+namespace OfflineSync.DomainModel.Models
 {
     public interface ISyncBaseModel
     {

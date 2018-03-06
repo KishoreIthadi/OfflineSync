@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TwoWaySyncClient")]
+[assembly: AssemblyTitle("OfflineSyncServer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TwoWaySyncClient")]
+[assembly: AssemblyProduct("OfflineSyncServer")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0f8b99cd-11cb-4511-83d7-657f755ed4b1")]
+[assembly: Guid("1d887aa7-8c01-478a-9c15-add234f60a96")]
 
 // Version information for an assembly consists of the following four values:
 //

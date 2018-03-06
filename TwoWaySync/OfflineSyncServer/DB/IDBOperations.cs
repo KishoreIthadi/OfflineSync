@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TwoWaySyncServer.DB
+namespace OfflineSyncServer.DB
 {
     public interface IDBOperations<T>
     {

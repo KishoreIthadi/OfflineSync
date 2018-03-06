@@ -1,4 +1,4 @@
-﻿namespace TwoWaySyncClient.Enums
+﻿namespace OfflineSyncClient.Enums
 {
     public enum DBTypeEnum
     {
