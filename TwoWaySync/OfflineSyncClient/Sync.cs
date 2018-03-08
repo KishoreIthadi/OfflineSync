@@ -4,6 +4,9 @@ using OfflineSyncClient.DB;
 using OfflineSync.DomainModel.Models;
 using System.Collections.Generic;
 using OfflineSyncClient.Enums;
+using OfflineSyncClient.Models;
+using TwoWaySync.DomainModel;
+using OfflineSync.DomainModel;
 
 namespace OfflineSyncClient
 {
@@ -34,17 +37,44 @@ namespace OfflineSyncClient
             try
             {
                 IDBOperations operations = new SQLiteDBOperations(_DBPath);
-                var settings = operations.GetSyncSettingByTable(typeof(T).Name);
+                List<SyncSettings> settingslist = operations.GetSyncSettingByTable(typeof(T).Name);
 
-                string data = "?lastSyncDate=" + settings.LastSyncedAt + "&data=" + settings.ControllerData;
+                // Having dublicate entries
+                if (settingslist.Count > 1)
+                {
+                    throw new Exception(StringUtility.DulplicateSettings);
+                }
 
-                SyncAPI syncAPI = new SyncAPI(_baseURL, _token);
+                if (settingslist != null)
+                {
+                    SyncSettings setting = settingslist[0];
 
-                List<T> res = await syncAPI.Get<List<T>>(settings.ControllerName + data);
+                    string data = string.Empty;
+
+                    if (setting.AutoSync)
+                    {
+                        data = string.Format(StringUtility.AutoSyncAPIGetCall
+                                                   , setting.ServerTableName
+                                                   , setting.ServerAssemblyName
+                                                   , setting.LastSyncedAt
+                                                   , setting.ControllerData);
+                    }
+                    else
+                    {
+                        data = string.Format(StringUtility.UserAPIGetCall
+                                                  , setting.ControllerName
+                                                  , setting.LastSyncedAt
+                                                  , setting.ControllerData);
+                    }
+
+                    SyncAPI syncAPI = new SyncAPI(_baseURL, _token);
+
+                    APIModel model = await syncAPI.Get<APIModel>(data);
+                }
             }
-            catch (Exception ex)
+            catch
             {
-
+                throw;
             }
         }
     }

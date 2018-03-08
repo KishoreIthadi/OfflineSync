@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using OfflineSync.DomainModel.Models;
+using System;
+using System.Collections.Generic;
 
 namespace OfflineSyncServer.DB
 {
-    public interface IDBOperations<T>
+    public interface IDBOperations<T> where T : class
     {
-         List<T> GetData();
+        List<T> GetData();
+
+        List<T> GetDataByLastSyncDate(DateTime dt);
     }
 }

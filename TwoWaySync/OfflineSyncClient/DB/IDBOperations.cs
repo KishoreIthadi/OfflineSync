@@ -8,6 +8,6 @@ namespace OfflineSyncClient.DB
     {
         List<T> GetData<T>() where T : ISyncBaseModel, new();
 
-        SyncSettings GetSyncSettingByTable(string tableName);
+        List<SyncSettings> GetSyncSettingByTable(string tableName);
     }
 }

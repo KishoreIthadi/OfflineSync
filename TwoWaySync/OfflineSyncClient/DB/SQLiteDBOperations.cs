@@ -15,11 +15,11 @@ namespace OfflineSyncClient.DB
             _DBPath = DBpath;
         }
 
-        public SyncSettings GetSyncSettingByTable(string tableName)
+        public List<SyncSettings> GetSyncSettingByTable(string clientTableName)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                return conn.Table<SyncSettings>().Where(m => m.TableName == tableName).FirstOrDefault();
+                return conn.Table<SyncSettings>().Where(m => m.ClientTableName == clientTableName).ToList();
             }
         }
 

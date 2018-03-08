@@ -43,6 +43,7 @@
     <Compile Include="Models\APIModel.cs" />
     <Compile Include="Models\ISyncBaseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StringUtility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
