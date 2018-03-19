@@ -37,7 +37,6 @@ namespace OfflineSyncServer.Controllers
             return result;
         }
 
-
         [HttpGet]
         public HttpResponseMessage Get(string serverTableName, string serverAssemblyName,
                             DateTime? lastSyncDate = null)
@@ -53,7 +52,7 @@ namespace OfflineSyncServer.Controllers
                 else
                 {
                     returnObj.Data = InvokeDBMethod(serverTableName, serverAssemblyName, "GetDataByLastSyncDate",
-                                                  new object[] { lastSyncDate });
+                                                   lastSyncDate);
                 }
 
                 return Request.CreateResponse(HttpStatusCode.OK, returnObj);
@@ -69,7 +68,7 @@ namespace OfflineSyncServer.Controllers
         {
             try
             {
-               // List<T> tObj = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
+                // List<T> tObj = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
 
                 return Request.CreateResponse(HttpStatusCode.OK);
             }

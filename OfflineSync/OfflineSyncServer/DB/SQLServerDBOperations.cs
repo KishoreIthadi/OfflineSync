@@ -40,7 +40,7 @@ namespace OfflineSyncServer.DB
         {
             using (SQLContext<T> db = new SQLContext<T>())
             {
-                return db.dbSet.Where((m) => m.ModifiedAt == dt).ToList();
+                return db.dbSet.Where(m => DateTime.Compare(dt, m.ModifiedAt) < 0).ToList();
             }
         }
 
