@@ -1,6 +1,6 @@
 ﻿namespace OfflineSyncClient.Enums
 {
-    public enum DBTypeEnum
+    public enum DBType
     {
         SQLite = 0
     }

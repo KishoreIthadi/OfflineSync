@@ -6,9 +6,9 @@ namespace OfflineSync.DomainModel.Models
     public interface ISyncBaseModel
     {
         [Unique]
+        [NotNull]
         string VersionID { get; set; }
         DateTime CreatedAt { get; set; }
         DateTime ModifiedAt { get; set; }
-        bool IsDeleted { get; set; }
     }
 }
