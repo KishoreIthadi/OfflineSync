@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OfflineSync.DomainModel")]
+[assembly: AssemblyTitle("User.FormsApp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("OfflineSync.DomainModel")]
+[assembly: AssemblyProduct("User.FormsApp")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("87c19377-247b-425a-8e15-f6924fe9defd")]
+[assembly: Guid("c080ded9-d04a-4fb0-bd8b-02dc0e70a6ce")]
 
 // Version information for an assembly consists of the following four values:
 //
