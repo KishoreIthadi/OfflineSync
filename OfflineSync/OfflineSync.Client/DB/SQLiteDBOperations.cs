@@ -15,11 +15,6 @@ namespace OfflineSync.Client.DB
         public SQLiteDBOperations(string DBpath)
         {
             _DBPath = DBpath;
-
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                conn.CreateTable<ConfigurationsModel>();
-            }
         }
 
         public List<SyncSettingsModel> GetSyncSettingByTable(string clientTableName)
@@ -238,7 +233,7 @@ namespace OfflineSync.Client.DB
 
         public void UpdateDeviceIDAllTransactions()
         {
-            
+
         }
     }
 }

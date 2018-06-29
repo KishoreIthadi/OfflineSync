@@ -36,6 +36,7 @@ namespace OfflineSync.Client.Models
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 conn.CreateTable<SyncSettingsModel>();
+                conn.CreateTable<ConfigurationsModel>();
             }
         }
 

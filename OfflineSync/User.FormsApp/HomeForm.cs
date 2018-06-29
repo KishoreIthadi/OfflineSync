@@ -20,7 +20,22 @@ namespace User.FormsApp
         string _DBPath = @"SyncDB.db";
         string _APIURL = @"http://localhost:64115/API/";
 
-        private void btnAddSettings_Click(object sender, EventArgs e)
+        private void HomeForm_Load(object sender, EventArgs e)
+        {
+            SQLite.SQLiteConnection db = new SQLite.SQLiteConnection(_DBPath);
+            db.CreateTable<tblTestACTS>();
+            db.CreateTable<tblTestACTSH>();
+            db.CreateTable<tblTestASTC>();
+            db.CreateTable<tblTestATWS>();
+            db.CreateTable<tblTestCTS>();
+            db.CreateTable<tblTestCTSH>();
+            db.CreateTable<tblTestSTC>();
+            db.CreateTable<tblTestTWS>();
+        }
+
+        #region Client
+
+        private void btnClientAddSettings_Click(object sender, EventArgs e)
         {
             SyncSettings syncSettings = new SyncSettings(_DBPath);
 
@@ -125,20 +140,7 @@ namespace User.FormsApp
            );
         }
 
-        private void HomeForm_Load(object sender, EventArgs e)
-        {
-            SQLite.SQLiteConnection db = new SQLite.SQLiteConnection(_DBPath);
-            db.CreateTable<tblTestACTS>();
-            db.CreateTable<tblTestACTSH>();
-            db.CreateTable<tblTestASTC>();
-            db.CreateTable<tblTestATWS>();
-            db.CreateTable<tblTestCTS>();
-            db.CreateTable<tblTestCTSH>();
-            db.CreateTable<tblTestSTC>();
-            db.CreateTable<tblTestTWS>();
-        }
-
-        private void btnRefresh_Click(object sender, EventArgs e)
+        private void btnClientRefresh_Click(object sender, EventArgs e)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
@@ -150,26 +152,26 @@ namespace User.FormsApp
             UpdateLastSyncDateTime();
         }
 
-        private void btnAdd_Click(object sender, EventArgs e)
+        private void btnClientAdd_Click(object sender, EventArgs e)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 conn.Insert(new tblTestACTS()
                 {
-                    Name = txtName.Text
+                    Name = txtClientName.Text
                 });
             }
 
             UpdateLastSyncDateTime();
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private void btnClientUpdate_Click(object sender, EventArgs e)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                var rec = conn.Table<tblTestACTS>().ToList().Where(m => m.ID == Convert.ToInt16(txtID.Text)).FirstOrDefault();
+                var rec = conn.Table<tblTestACTS>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
 
-                rec.Name = txtName.Text;
+                rec.Name = txtClientName.Text;
 
                 conn.Update(rec);
 
@@ -183,16 +185,38 @@ namespace User.FormsApp
             {
                 var rec = conn.Table<SyncSettingsModel>().ToList().Where(m => m.ClientTableName == "tblTestACTS").FirstOrDefault();
 
-                lblLastSyncDateTime.Text = rec.LastSyncedAt;
+                lblClientLastSyncDateTime.Text = rec.LastSyncedAt;
             }
         }
 
-        private void btnSync_Click(object sender, EventArgs e)
+        private void btnClientSync_Click(object sender, EventArgs e)
         {
             SyncUtility<tblTestACTS> syncUtility = new SyncUtility<tblTestACTS>(_DBPath, _APIURL, null);
             syncUtility.StartSyncAsync();
 
             UpdateLastSyncDateTime();
         }
+
+        #endregion Client
+
+
+        #region Server
+
+        private void btnServerAdd_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnServerUpdate_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnServerRefresh_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        #endregion Server
     }
 }
