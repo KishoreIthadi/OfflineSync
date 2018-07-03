@@ -65,10 +65,16 @@
     <Compile Include="DB\SQLiteDBOperations.cs" />
     <Compile Include="Enums\DBType.cs" />
     <Compile Include="Enums\OveridePriority.cs" />
-    <Compile Include="Models\ConfigurationsModel.cs" />
-    <Compile Include="Models\ISyncClientBaseModel.cs" />
-    <Compile Include="Models\SyncSettingsModel.cs" />
+    <Compile Include="Models\BaseModels\IConfigurationsBaseModel.cs" />
+    <Compile Include="Models\GlobalConfig.cs" />
+    <Compile Include="Models\BaseModels\ISyncClientBaseModel.cs" />
+    <Compile Include="Models\SQLite\SQLiteConfigurationsModel.cs" />
+    <Compile Include="Models\SQLite\ISQLiteSyncClientModel.cs" />
+    <Compile Include="Models\SQLite\SQLiteSyncSettingsModel.cs" />
+    <Compile Include="Models\BaseModels\ISyncSettingsBaseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\SyncSettingsUtility.cs" />
+    <Compile Include="Utilities\DeviceIDUtility.cs" />
     <Compile Include="Utilities\SyncUtility.cs" />
   </ItemGroup>
   <ItemGroup>

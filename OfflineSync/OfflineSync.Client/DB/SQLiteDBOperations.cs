@@ -1,28 +1,38 @@
 ﻿using SQLite;
 using System.Collections.Generic;
 using System.Linq;
-using OfflineSync.Client.Models;
 using System;
 using OfflineSync.DomainModel.Models;
 using OfflineSync.DomainModel.Enums;
+using OfflineSync.Client.Models;
+using OfflineSync.DomainModel.Utilities;
+using OfflineSync.Client.Models.BaseModels;
+using OfflineSync.Client.Models.SQLite;
 
 namespace OfflineSync.Client.DB
 {
-    public class SQLiteDBOperations : IDBOperations
+    internal class SQLiteDBOperations : IDBOperations
     {
         public string _DBPath;
 
-        public SQLiteDBOperations(string DBpath)
+        public SQLiteDBOperations()
         {
-            _DBPath = DBpath;
+            _DBPath = GlobalConfig.DBPath;
+
+            using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+            {
+
+                conn.CreateTable<SQLiteConfigurationsModel>();
+                conn.CreateTable<SQLiteSyncSettingsModel>();
+            }
         }
 
-        public List<SyncSettingsModel> GetSyncSettingByTable(string clientTableName)
+        public List<ISyncSettingsBaseModel> GetSyncSettingByTable<T>(string tableName)
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                var res = conn.Table<SyncSettingsModel>()
-                    .Where(m => m.ClientTableName == clientTableName).ToList();
+                var res = conn.Table<SQLiteSyncSettingsModel>()
+                    .Where(m => m.ClientTableName == tableName).ToList<ISyncSettingsBaseModel>();
 
                 if (res.Count == 0) { return null; }
 
@@ -36,7 +46,6 @@ namespace OfflineSync.Client.DB
             {
                 //TODO need to check the comarision is valid or not
                 //TODO alternate for .ToList()
-
                 List<T> res;
 
                 if (lastsync.Value == DateTime.MinValue)
@@ -74,7 +83,7 @@ namespace OfflineSync.Client.DB
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                ConfigurationsModel configurationsModel = conn.Table<ConfigurationsModel>()
+                SQLiteConfigurationsModel configurationsModel = conn.Table<SQLiteConfigurationsModel>()
                     .Where(m => m.Key == key).FirstOrDefault();
 
                 if (configurationsModel != null)
@@ -90,7 +99,7 @@ namespace OfflineSync.Client.DB
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                conn.Insert(new ConfigurationsModel { Key = key, Value = value });
+                conn.Insert(new SQLiteConfigurationsModel { Key = key, Value = value });
             }
         }
 
@@ -165,7 +174,7 @@ namespace OfflineSync.Client.DB
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                var rec = conn.Table<SyncSettingsModel>()
+                var rec = conn.Table<SQLiteSyncSettingsModel>()
                     .Where(m => m.SyncSettingsID == syncSettingsID).FirstOrDefault();
 
                 if (rec != null)
@@ -231,9 +240,80 @@ namespace OfflineSync.Client.DB
             }
         }
 
-        public void UpdateDeviceIDAllTransactions()
+        public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model) 
         {
+            using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+            {
+                var rec = conn.Table<SQLiteSyncSettingsModel>()
+                              .Where(m => m.SyncSettingsID == model.SyncSettingsID).FirstOrDefault();
 
+                if (rec != null)
+                {
+                    if (rec.ClientTableName != model.ClientTableName)
+                    {
+                        throw new Exception(StringUtility.CannotRenameTable);
+                    }
+
+                    conn.Update(model);
+                }
+                else
+                {
+                    throw new Exception(StringUtility.RecordNotFound);
+                }
+            }
+        }
+
+        public void AddSyncSettingsModel(ISyncSettingsBaseModel model)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+            {
+                if (!conn.Table<SQLiteSyncSettingsModel>()
+                    .Any(m => m.ClientTableName == model.ClientTableName))
+                {
+                    conn.Insert(model);
+
+                    // if user tries to insert table which doesnot exists
+                    // droping that table in catch, because the trigger will throw an error
+                    try
+                    {
+                        string insertTrigger = "CREATE TRIGGER {0}_CreateTrigger" +
+                                     " AFTER INSERT ON {1}" +
+                                     " BEGIN" +
+                                     " UPDATE {2}" +
+                                     " SET SyncCreatedAt = DATETIME('NOW'), " +
+                                     " SyncModifiedAt = DATETIME('NOW')," +
+                                     " VersionID= CAST(hex(randomblob(16)) AS TEXT) || '-'  || +" +
+                                     "CAST((SELECT Value FROM Configurations WHERE KEY == 'DeviceID' )AS TEXT)" +
+                                     " WHERE VersionID IS NULL;" +
+                                     " END;";
+
+                        conn.Execute(string.Format(insertTrigger, model.ClientTableName, model.ClientTableName, model.ClientTableName));
+
+                        string updateTrigger = "CREATE TRIGGER {0}_ModifyTrigger" +
+                                     " AFTER UPDATE ON {1}" +
+                                     " WHEN old.VersionID == new.VersionID" +
+                                     " AND old.SyncModifiedAt == new.SyncModifiedAt" +
+                                     " BEGIN" +
+                                     " Update {2}" +
+                                     " SET SyncModifiedAt = DATETIME('NOW')" +
+                                     " WHERE VersionID == old.VersionID" +
+                                     " AND ifnull(TransactionID,0) == ifnull(old.TransactionID,0)" +
+                                     " AND ifnull(IsSynced,0) == ifnull(old.IsSynced,0);" +
+                                     " END;";
+
+                        conn.Execute(string.Format(updateTrigger, model.ClientTableName, model.ClientTableName, model.ClientTableName));
+                    }
+                    catch (Exception ex)
+                    {
+                        conn.Delete(model);
+                        throw;
+                    }
+                }
+                else
+                {
+                    throw new Exception(StringUtility.DulplicateSettings);
+                }
+            }
         }
     }
 }

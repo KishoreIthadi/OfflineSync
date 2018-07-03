@@ -1,10 +1,7 @@
-﻿using SQLite;
-
-namespace OfflineSync.Client.Models
+﻿namespace OfflineSync.Client.Models.BaseModels
 {
     public interface ISyncClientBaseModel
     {
-        [Unique, NotNull]
         string VersionID { get; set; }
         string TransactionID { get; set; }
         bool? IsSynced { get; set; }

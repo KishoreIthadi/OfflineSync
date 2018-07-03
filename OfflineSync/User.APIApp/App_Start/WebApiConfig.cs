@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Web.Http;
+﻿using System.Web.Http;
 
 namespace User.APIApp
 {

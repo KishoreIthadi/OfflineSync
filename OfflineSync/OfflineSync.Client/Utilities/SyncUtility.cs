@@ -9,30 +9,20 @@ using OfflineSync.Client.Models;
 using OfflineSync.DomainModel.Utilities;
 using OfflineSync.DomainModel.Enums;
 using Newtonsoft.Json;
+using OfflineSync.Client.Models.BaseModels;
 
 namespace OfflineSync.Client.Utilities
 {
     public class SyncUtility<T> where T : ISyncClientBaseModel, new()
     {
-        private string _DBPath { get; set; }
-        private string _token;
-        private string _APIURL;
-
         IDBOperations _dBOperations;
 
-        public SyncUtility(string databasePath, string APIURL,
-            string token, ClientDBType dbType = ClientDBType.SQLite)
+        public SyncUtility()
         {
-            _DBPath = databasePath;
-            _APIURL = APIURL;
-            _token = token;
-
-            // Creating Configuration Model
-            switch (dbType)
+            switch (GlobalConfig.DBType)
             {
                 case ClientDBType.SQLite:
-                    _dBOperations = new SQLiteDBOperations(databasePath);
-
+                    _dBOperations = new SQLiteDBOperations();
                     break;
             }
         }
@@ -41,9 +31,9 @@ namespace OfflineSync.Client.Utilities
         {
             try
             {
-                List<SyncSettingsModel> settingslist = _dBOperations.GetSyncSettingByTable(typeof(T).Name);
+                List<ISyncSettingsBaseModel> settingslist = _dBOperations.GetSyncSettingByTable< ISyncSettingsBaseModel>(typeof(T).Name);
 
-                SyncAPIUtility syncAPI = new SyncAPIUtility(_APIURL, _token);
+                SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
 
                 // Having dublicate entries
                 if (settingslist == null)
@@ -56,7 +46,7 @@ namespace OfflineSync.Client.Utilities
                 }
                 else
                 {
-                    SyncSettingsModel settings = settingslist[0];
+                    ISyncSettingsBaseModel settings = settingslist[0];
 
                     APIModel model = await GetAPIModel(settings);
 
@@ -207,9 +197,9 @@ namespace OfflineSync.Client.Utilities
             }
         }
 
-        public async Task<APIModel> FailedTransactionsSync(APIModel model, SyncSettingsModel syncSettingsModel)
+        internal async Task<APIModel> FailedTransactionsSync(APIModel model, ISyncSettingsBaseModel syncSettingsModel)
         {
-            SyncAPIUtility syncAPI = new SyncAPIUtility(_APIURL, _token);
+            SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
 
             APIModel res = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.GetData);
 
@@ -260,11 +250,11 @@ namespace OfflineSync.Client.Utilities
             return res;
         }
 
-        public async Task<APIModel> GetAPIModel(SyncSettingsModel settings)
+        internal async Task<APIModel> GetAPIModel(ISyncSettingsBaseModel settings)
         {
             APIModel model = new APIModel();
 
-            string deviceID = await GetDeviceID();
+            string deviceID = await new DeviceIDUtility().GetDeviceID();
 
             List<T> failedTransactionData = null;
 
@@ -291,33 +281,14 @@ namespace OfflineSync.Client.Utilities
             return model;
         }
 
-        public async Task<string> GetDeviceID()
-        {
-            SyncAPIUtility syncAPI = new SyncAPIUtility(_APIURL, _token);
-
-            // Checking if deviceID exists
-            string deviceID = _dBOperations.GetConfigurationsByKey("DeviceID");
-
-            if (deviceID == null)
-            {
-                // Get DeviceID from API
-                deviceID = await syncAPI.Get<string>(StringUtility.DeviceIDAPICall);
-
-                // saving the device id to configuration table
-                _dBOperations.InsertConfigurationsModel("DeviceID", deviceID);
-            }
-
-            return deviceID;
-        }
-
-        public async Task PostDataAsync(APIModel model)
+        internal async Task PostDataAsync(APIModel model)
         {
             List<T> clientList = (List<T>)model.Data;
 
             _dBOperations.UpdateIDS(clientList);
 
             //TODO Pagination
-            SyncAPIUtility syncAPI = new SyncAPIUtility(_APIURL, _token);
+            SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
 
             await syncAPI.Post<APIModel, APIModel>(model, StringUtility.PostData);
 
