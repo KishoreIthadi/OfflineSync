@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace OfflineSync.Server.DB
 {
-    public class SQLContext<T> : DbContext where T : class
+    internal class SQLContext<T> : DbContext where T : class
     {
         public SQLContext() : base("SyncConn")
         {
@@ -25,12 +25,8 @@ namespace OfflineSync.Server.DB
         public DbSet<T> dbSet { get; set; }
     }
 
-    public class SQLServerDBOperations : IDBOperations
+    internal class SQLServerDBOperations : IDBOperations
     {
-        public SQLServerDBOperations()
-        {
-        }
-
         public List<string> GetFailedTransactionInfo(List<string> transactionIDs, string deviceID)
         {
             using (SQLContext<tblSyncTransaction> db = new SQLContext<tblSyncTransaction>())
@@ -49,6 +45,8 @@ namespace OfflineSync.Server.DB
                         failedTransactionList.Add(id);
                     }
                 }
+
+                db.SaveChanges();
 
                 if (failedTransactionList.Count > 0) { return failedTransactionList; }
 
@@ -96,6 +94,11 @@ namespace OfflineSync.Server.DB
 
             // checking for failed transactions
             List<string> failedTransactionIDs = (List<string>)GetFailedTransactionInfo(uniqueTransactionIDs, model.DeviceID);
+
+            if (failedTransactionIDs == null)
+            {
+                return;
+            }
 
             List<T> failedRecords = new List<T>();
 
@@ -162,89 +165,105 @@ namespace OfflineSync.Server.DB
 
         public void InsertUpdate<T>(APIModel model) where T : class, ISyncServerBaseModel
         {
-            try
+
+            List<T> list = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
+
+            string transactionID = list.FirstOrDefault().TransactionID;
+
+            using (SQLContext<T> db = new SQLContext<T>())
             {
-                List<T> list = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
-
-                string transactionID = list.FirstOrDefault().TransactionID;
-
-                using (SQLContext<T> db = new SQLContext<T>())
+                using (SQLContext<tblSyncTransaction> DB = new SQLContext<tblSyncTransaction>())
                 {
-                    using (SQLContext<tblSyncTransaction> DB = new SQLContext<tblSyncTransaction>())
+                    if (!DB.Set<tblSyncTransaction>().Any(m => m.TransactionID == transactionID && m.DeviceID == model.DeviceID))
                     {
-                        if (!DB.Set<tblSyncTransaction>().Any(m => m.TransactionID == transactionID && m.DeviceID == model.DeviceID))
+                        DB.Set<tblSyncTransaction>().Add(
+                           new tblSyncTransaction
+                           {
+                               DeviceID = model.DeviceID,
+                               TransactionID = transactionID,
+                               Status = false
+                           }
+                        );
+                        DB.SaveChanges();
+                    }
+                    else
+                    {
+                        // TransactionID with DeviceID already exists
+                        // Dublicate transactionID error
+                        model.FailedTransactionIDs[0] = transactionID;
+                    }
+                }
+
+                foreach (var item in list)
+                {
+                    try
+                    {
+                        var updatedItem = db.dbSet.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
+
+                        if (updatedItem != null)
                         {
-                            DB.Set<tblSyncTransaction>().Add(
-                               new tblSyncTransaction
-                               {
-                                   DeviceID = model.DeviceID,
-                                   TransactionID = transactionID,
-                                   Status = false
-                               }
-                            );
-                            DB.SaveChanges();
+                            var adapter = (IObjectContextAdapter)db;
+                            var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
+                                            .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
+
+                            // Need to get the list of autoincrement columns
+
+                            var itemJson = JsonConvert.SerializeObject(item);
+                            var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
+
+                            var updatedItemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(updatedItem));
+
+                            foreach (var keyname in keyNames)
+                            {
+                                itemDict[keyname] = updatedItemDict[keyname];
+                            }
+
+                            var finalJson = JsonConvert.SerializeObject(itemDict);
+                            var finalRec = JsonConvert.DeserializeObject<T>(finalJson);
+
+                            db.Entry(updatedItem).CurrentValues.SetValues(finalRec);
                         }
                         else
                         {
-                            // TransactionID with DeviceID already exists
-                            // Dublicate transactionID error
-                            model.FailedTransactionIDs[0] = transactionID;
+                            db.dbSet.Add(item);
                         }
                     }
-
-                    foreach (var item in list)
+                    catch (Exception ex)
                     {
-                        try
-                        {
-                            var updatedItem = db.dbSet.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
-
-                            if (updatedItem != null)
-                            {
-                                var adapter = (IObjectContextAdapter)db;
-                                var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
-                                                .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
-
-                                // Need to get the list of autoincrement columns
-
-                                var itemJson = JsonConvert.SerializeObject(item);
-                                var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
-
-                                var updatedItemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(updatedItem));
-
-                                foreach (var keyname in keyNames)
-                                {
-                                    itemDict[keyname] = updatedItemDict[keyname];
-                                }
-
-                                var finalJson = JsonConvert.SerializeObject(itemDict);
-                                var finalRec = JsonConvert.DeserializeObject<T>(finalJson);
-
-                                db.Entry(updatedItem).CurrentValues.SetValues(finalRec);
-                            }
-                            else
-                            {
-                                db.dbSet.Add(item);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            // need to write logic for capturing dublicate versionid
-                        }
-                    }
-
-                    db.SaveChanges();
-
-                    using (SQLContext<tblSyncTransaction> DB = new SQLContext<tblSyncTransaction>())
-                    {
-                        var transc = DB.Set<tblSyncTransaction>().Where(m => m.TransactionID == transactionID).FirstOrDefault();
-                        transc.Status = true;
-                        DB.SaveChanges();
+                        // need to write logic for capturing dublicate versionid
                     }
                 }
-            }
-            catch (Exception ex)
-            {
 
+                db.SaveChanges();
+
+                using (SQLContext<tblSyncTransaction> DB = new SQLContext<tblSyncTransaction>())
+                {
+                    var transc = DB.Set<tblSyncTransaction>().Where(m => m.TransactionID == transactionID).FirstOrDefault();
+                    transc.Status = true;
+                    DB.SaveChanges();
+                }
+            }
+        }
+
+        public string GetDeviceID()
+        {
+            using (SQLContext<tblSyncDevice> db = new SQLContext<tblSyncDevice>())
+            {
+                string newID = Guid.NewGuid().ToString();
+
+                while (db.Set<tblSyncDevice>().Any(m => m.DeviceID == newID))
+                {
+                    newID = Guid.NewGuid().ToString();
+                }
+
+                db.dbSet.Add(new tblSyncDevice
+                {
+                    DeviceID = newID
+                });
+
+                db.SaveChanges();
+
+                return newID;
             }
         }
     }

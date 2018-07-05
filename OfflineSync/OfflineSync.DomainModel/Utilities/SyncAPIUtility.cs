@@ -82,7 +82,8 @@ namespace OfflineSync.DomainModel.Utilities
 
                     if (response.IsSuccessStatusCode)
                     {
-                        return JsonConvert.DeserializeObject<U>(await response.Content.ReadAsStringAsync());
+                        var res = await response.Content.ReadAsStringAsync();
+                        return JsonConvert.DeserializeObject<U>(res);
                     }
 
                     // Returning error message

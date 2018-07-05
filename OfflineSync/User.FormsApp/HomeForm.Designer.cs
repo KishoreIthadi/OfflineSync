@@ -37,11 +37,10 @@
             this.txtClientID = new System.Windows.Forms.TextBox();
             this.lblClientLastSyncDateTime = new System.Windows.Forms.Label();
             this.btnClientSync = new System.Windows.Forms.Button();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.lblErrorVal = new System.Windows.Forms.Label();
+            this.lblClientErrorVal = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.lblSeverVal = new System.Windows.Forms.Label();
+            this.lblServerVal = new System.Windows.Forms.Label();
             this.txtServerID = new System.Windows.Forms.TextBox();
             this.txtServerName = new System.Windows.Forms.TextBox();
             this.btnServerUpdate = new System.Windows.Forms.Button();
@@ -52,8 +51,12 @@
             this.btnCreateTable = new System.Windows.Forms.Button();
             this.lblClientVal = new System.Windows.Forms.Label();
             this.lblDeviceID = new System.Windows.Forms.Label();
+            this.cbTblType = new System.Windows.Forms.ComboBox();
+            this.btnCreateServerTable = new System.Windows.Forms.Button();
+            this.lblServerErrorVal = new System.Windows.Forms.Label();
+            this.dgvServerRecords = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRecords)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvServerRecords)).BeginInit();
             this.SuspendLayout();
             // 
             // btnClientAddSettings
@@ -146,24 +149,14 @@
             this.btnClientSync.UseVisualStyleBackColor = true;
             this.btnClientSync.Click += new System.EventHandler(this.btnClientSync_Click);
             // 
-            // dataGridView1
+            // lblClientErrorVal
             // 
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(825, 227);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowTemplate.Height = 24;
-            this.dataGridView1.Size = new System.Drawing.Size(864, 547);
-            this.dataGridView1.TabIndex = 11;
-            // 
-            // lblErrorVal
-            // 
-            this.lblErrorVal.AutoSize = true;
-            this.lblErrorVal.ForeColor = System.Drawing.Color.Red;
-            this.lblErrorVal.Location = new System.Drawing.Point(661, 30);
-            this.lblErrorVal.Name = "lblErrorVal";
-            this.lblErrorVal.Size = new System.Drawing.Size(0, 17);
-            this.lblErrorVal.TabIndex = 16;
+            this.lblClientErrorVal.AutoSize = true;
+            this.lblClientErrorVal.ForeColor = System.Drawing.Color.Red;
+            this.lblClientErrorVal.Location = new System.Drawing.Point(613, 62);
+            this.lblClientErrorVal.Name = "lblClientErrorVal";
+            this.lblClientErrorVal.Size = new System.Drawing.Size(0, 17);
+            this.lblClientErrorVal.TabIndex = 16;
             // 
             // label3
             // 
@@ -185,13 +178,14 @@
             this.label4.TabIndex = 23;
             this.label4.Text = "Server";
             // 
-            // lblSeverVal
+            // lblServerVal
             // 
-            this.lblSeverVal.AutoSize = true;
-            this.lblSeverVal.Location = new System.Drawing.Point(1399, 166);
-            this.lblSeverVal.Name = "lblSeverVal";
-            this.lblSeverVal.Size = new System.Drawing.Size(0, 17);
-            this.lblSeverVal.TabIndex = 28;
+            this.lblServerVal.AutoSize = true;
+            this.lblServerVal.ForeColor = System.Drawing.Color.Green;
+            this.lblServerVal.Location = new System.Drawing.Point(1399, 166);
+            this.lblServerVal.Name = "lblServerVal";
+            this.lblServerVal.Size = new System.Drawing.Size(0, 17);
+            this.lblServerVal.TabIndex = 28;
             // 
             // txtServerID
             // 
@@ -286,26 +280,80 @@
             this.lblDeviceID.TabIndex = 34;
             this.lblDeviceID.Text = "DeviceID";
             // 
+            // cbTblType
+            // 
+            this.cbTblType.FormattingEnabled = true;
+            this.cbTblType.Items.AddRange(new object[] {
+            "tblTestACTS",
+            "tblTestACTSH",
+            "tblTestASTC",
+            "tblTestATWS",
+            "tblTestCTS",
+            "tblTestCTSH",
+            "tblTestSTC",
+            "tblTestTWS"});
+            this.cbTblType.Location = new System.Drawing.Point(717, 12);
+            this.cbTblType.Name = "cbTblType";
+            this.cbTblType.Size = new System.Drawing.Size(158, 24);
+            this.cbTblType.TabIndex = 35;
+            this.cbTblType.SelectedIndexChanged += new System.EventHandler(this.cbTblType_SelectedIndexChanged);
+            // 
+            // btnCreateServerTable
+            // 
+            this.btnCreateServerTable.Location = new System.Drawing.Point(1098, 12);
+            this.btnCreateServerTable.Name = "btnCreateServerTable";
+            this.btnCreateServerTable.Size = new System.Drawing.Size(102, 35);
+            this.btnCreateServerTable.TabIndex = 36;
+            this.btnCreateServerTable.Text = "Create Table";
+            this.btnCreateServerTable.UseVisualStyleBackColor = true;
+            this.btnCreateServerTable.Click += new System.EventHandler(this.btnCreateServerTable_Click);
+            // 
+            // lblServerErrorVal
+            // 
+            this.lblServerErrorVal.AutoSize = true;
+            this.lblServerErrorVal.ForeColor = System.Drawing.Color.Red;
+            this.lblServerErrorVal.Location = new System.Drawing.Point(613, 107);
+            this.lblServerErrorVal.Name = "lblServerErrorVal";
+            this.lblServerErrorVal.Size = new System.Drawing.Size(0, 17);
+            this.lblServerErrorVal.TabIndex = 37;
+            // 
+            // dgvServerRecords
+            // 
+            this.dgvServerRecords.AllowUserToAddRows = false;
+            this.dgvServerRecords.AllowUserToDeleteRows = false;
+            this.dgvServerRecords.AllowUserToOrderColumns = true;
+            this.dgvServerRecords.BackgroundColor = System.Drawing.Color.White;
+            this.dgvServerRecords.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvServerRecords.Location = new System.Drawing.Point(825, 227);
+            this.dgvServerRecords.Name = "dgvServerRecords";
+            this.dgvServerRecords.ReadOnly = true;
+            this.dgvServerRecords.RowTemplate.Height = 24;
+            this.dgvServerRecords.Size = new System.Drawing.Size(782, 547);
+            this.dgvServerRecords.TabIndex = 38;
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 797);
+            this.Controls.Add(this.dgvServerRecords);
+            this.Controls.Add(this.lblServerErrorVal);
+            this.Controls.Add(this.btnCreateServerTable);
+            this.Controls.Add(this.cbTblType);
             this.Controls.Add(this.lblDeviceID);
             this.Controls.Add(this.lblClientVal);
             this.Controls.Add(this.btnCreateTable);
             this.Controls.Add(this.btnAddDeviceID);
             this.Controls.Add(this.btnAddGlobalConfig);
             this.Controls.Add(this.btnServerRefresh);
-            this.Controls.Add(this.lblSeverVal);
+            this.Controls.Add(this.lblServerVal);
             this.Controls.Add(this.txtServerID);
             this.Controls.Add(this.txtServerName);
             this.Controls.Add(this.btnServerUpdate);
             this.Controls.Add(this.btnServerAdd);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.lblErrorVal);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.lblClientErrorVal);
             this.Controls.Add(this.btnClientSync);
             this.Controls.Add(this.lblClientLastSyncDateTime);
             this.Controls.Add(this.txtClientID);
@@ -321,7 +369,7 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.HomeForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvRecords)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvServerRecords)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -338,11 +386,10 @@
         private System.Windows.Forms.TextBox txtClientID;
         private System.Windows.Forms.Label lblClientLastSyncDateTime;
         private System.Windows.Forms.Button btnClientSync;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Label lblErrorVal;
+        private System.Windows.Forms.Label lblClientErrorVal;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label lblSeverVal;
+        private System.Windows.Forms.Label lblServerVal;
         private System.Windows.Forms.TextBox txtServerID;
         private System.Windows.Forms.TextBox txtServerName;
         private System.Windows.Forms.Button btnServerUpdate;
@@ -353,5 +400,9 @@
         private System.Windows.Forms.Button btnCreateTable;
         private System.Windows.Forms.Label lblClientVal;
         private System.Windows.Forms.Label lblDeviceID;
+        private System.Windows.Forms.ComboBox cbTblType;
+        private System.Windows.Forms.Button btnCreateServerTable;
+        private System.Windows.Forms.Label lblServerErrorVal;
+        private System.Windows.Forms.DataGridView dgvServerRecords;
     }
 }

@@ -1,9 +1,8 @@
 ﻿using OfflineSync.DomainModel.Enums;
 using OfflineSync.DomainModel.Models;
 using OfflineSync.Server.DB;
-using OfflineSync.Server.Models;
 using System;
-using System.Linq;
+using System.Configuration;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
@@ -13,8 +12,18 @@ namespace OfflineSync.Server.Controllers
 {
     public class SyncController : ApiController
     {
+        IDBOperations _DBOperations;
+
         public SyncController()
         {
+            string DBype = ConfigurationManager.AppSettings["ServerDBType"].ToString();
+
+            switch (DBype)
+            {
+                case "SQLServer":
+                    _DBOperations = new SQLServerDBOperations();
+                    break;
+            }
         }
 
         [HttpGet]
@@ -22,24 +31,7 @@ namespace OfflineSync.Server.Controllers
         {
             try
             {
-                using (SQLContext<tblSyncDevice> db = new SQLContext<tblSyncDevice>())
-                {
-                    string newID = Guid.NewGuid().ToString();
-
-                    while (db.Set<tblSyncDevice>().Any(m => m.DeviceID == newID))
-                    {
-                        newID = Guid.NewGuid().ToString();
-                    }
-
-                    var rec = db.dbSet.Add(new tblSyncDevice
-                    {
-                        DeviceID = newID
-                    });
-
-                    db.SaveChanges();
-
-                    return Request.CreateResponse(HttpStatusCode.OK, newID);
-                }
+                return Request.CreateResponse(HttpStatusCode.OK, _DBOperations.GetDeviceID());
             }
             catch (Exception ex)
             {
@@ -102,7 +94,16 @@ namespace OfflineSync.Server.Controllers
             string methodName, object param)
         {
             Assembly assembly = Assembly.Load(serverAssemblyName);
-            Type classType = typeof(SQLServerDBOperations);
+            Type classType = null;
+
+            string DBype = ConfigurationManager.AppSettings["ServerDBType"].ToString();
+
+            switch (DBype)
+            {
+                case "SQLServer":
+                    classType = typeof(SQLServerDBOperations);
+                    break;
+            }
 
             object obj = Activator.CreateInstance(classType);
 

@@ -31,7 +31,7 @@ namespace OfflineSync.Client.Utilities
         {
             try
             {
-                List<ISyncSettingsBaseModel> settingslist = _dBOperations.GetSyncSettingByTable< ISyncSettingsBaseModel>(typeof(T).Name);
+                List<ISyncSettingsBaseModel> settingslist = _dBOperations.GetSyncSettingByTable<ISyncSettingsBaseModel>(typeof(T).Name);
 
                 SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
 
@@ -89,6 +89,8 @@ namespace OfflineSync.Client.Utilities
 
                     if (model.SyncType == SyncType.SyncServerToClient && serverList != null)
                     {
+                        insertList = new List<T>();
+
                         foreach (var item in serverList)
                         {
                             if (DateTime.Compare(Convert.ToDateTime(settings.LastSyncedAt), Convert.ToDateTime(item.SyncCreatedAt)) < 0)
@@ -238,7 +240,7 @@ namespace OfflineSync.Client.Utilities
             }
             else if (res.FailedTrasationData != null)
             {
-                var list = (List<T>)res.FailedTrasationData;
+                var list = JsonConvert.DeserializeObject<List<T>>(res.FailedTrasationData.ToString());
 
                 List<string> transactionList = list.Select(m => m.TransactionID).Distinct().ToList();
 

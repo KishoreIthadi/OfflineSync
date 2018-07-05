@@ -194,7 +194,12 @@ namespace OfflineSync.Client.DB
                 {
                     if (syncType == SyncType.SyncClientToServerAndHardDelete)
                     {
-                        conn.Table<T>().Delete(m => m.TransactionID == item);
+                        var list = conn.Table<T>().ToList().Where(m => m.TransactionID == item).ToList();
+
+                        foreach (var rec in list)
+                        {
+                            conn.Delete(rec);
+                        }
                     }
                     else
                     {
