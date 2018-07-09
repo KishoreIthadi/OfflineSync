@@ -55,6 +55,9 @@
             this.btnCreateServerTable = new System.Windows.Forms.Button();
             this.lblServerErrorVal = new System.Windows.Forms.Label();
             this.dgvServerRecords = new System.Windows.Forms.DataGridView();
+            this.cbServerTableType = new System.Windows.Forms.ComboBox();
+            this.btnClientReset = new System.Windows.Forms.Button();
+            this.btnServerReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRecords)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvServerRecords)).BeginInit();
             this.SuspendLayout();
@@ -96,7 +99,7 @@
             // 
             // btnClientAdd
             // 
-            this.btnClientAdd.Location = new System.Drawing.Point(336, 158);
+            this.btnClientAdd.Location = new System.Drawing.Point(337, 152);
             this.btnClientAdd.Name = "btnClientAdd";
             this.btnClientAdd.Size = new System.Drawing.Size(75, 35);
             this.btnClientAdd.TabIndex = 3;
@@ -107,7 +110,7 @@
             // btnClientUpdate
             // 
             this.btnClientUpdate.Enabled = false;
-            this.btnClientUpdate.Location = new System.Drawing.Point(427, 158);
+            this.btnClientUpdate.Location = new System.Drawing.Point(428, 152);
             this.btnClientUpdate.Name = "btnClientUpdate";
             this.btnClientUpdate.Size = new System.Drawing.Size(75, 35);
             this.btnClientUpdate.TabIndex = 4;
@@ -117,14 +120,14 @@
             // 
             // txtClientName
             // 
-            this.txtClientName.Location = new System.Drawing.Point(336, 117);
+            this.txtClientName.Location = new System.Drawing.Point(337, 111);
             this.txtClientName.Name = "txtClientName";
             this.txtClientName.Size = new System.Drawing.Size(166, 22);
             this.txtClientName.TabIndex = 5;
             // 
             // txtClientID
             // 
-            this.txtClientID.Location = new System.Drawing.Point(336, 84);
+            this.txtClientID.Location = new System.Drawing.Point(337, 78);
             this.txtClientID.Name = "txtClientID";
             this.txtClientID.ReadOnly = true;
             this.txtClientID.Size = new System.Drawing.Size(166, 22);
@@ -182,14 +185,14 @@
             // 
             this.lblServerVal.AutoSize = true;
             this.lblServerVal.ForeColor = System.Drawing.Color.Green;
-            this.lblServerVal.Location = new System.Drawing.Point(1399, 166);
+            this.lblServerVal.Location = new System.Drawing.Point(1538, 159);
             this.lblServerVal.Name = "lblServerVal";
             this.lblServerVal.Size = new System.Drawing.Size(0, 17);
             this.lblServerVal.TabIndex = 28;
             // 
             // txtServerID
             // 
-            this.txtServerID.Location = new System.Drawing.Point(1224, 85);
+            this.txtServerID.Location = new System.Drawing.Point(1363, 78);
             this.txtServerID.Name = "txtServerID";
             this.txtServerID.ReadOnly = true;
             this.txtServerID.Size = new System.Drawing.Size(167, 22);
@@ -197,14 +200,15 @@
             // 
             // txtServerName
             // 
-            this.txtServerName.Location = new System.Drawing.Point(1224, 118);
+            this.txtServerName.Location = new System.Drawing.Point(1363, 111);
             this.txtServerName.Name = "txtServerName";
             this.txtServerName.Size = new System.Drawing.Size(167, 22);
             this.txtServerName.TabIndex = 26;
             // 
             // btnServerUpdate
             // 
-            this.btnServerUpdate.Location = new System.Drawing.Point(1316, 158);
+            this.btnServerUpdate.Enabled = false;
+            this.btnServerUpdate.Location = new System.Drawing.Point(1455, 151);
             this.btnServerUpdate.Name = "btnServerUpdate";
             this.btnServerUpdate.Size = new System.Drawing.Size(75, 35);
             this.btnServerUpdate.TabIndex = 25;
@@ -214,7 +218,7 @@
             // 
             // btnServerAdd
             // 
-            this.btnServerAdd.Location = new System.Drawing.Point(1225, 158);
+            this.btnServerAdd.Location = new System.Drawing.Point(1364, 151);
             this.btnServerAdd.Name = "btnServerAdd";
             this.btnServerAdd.Size = new System.Drawing.Size(75, 35);
             this.btnServerAdd.TabIndex = 24;
@@ -224,9 +228,9 @@
             // 
             // btnServerRefresh
             // 
-            this.btnServerRefresh.Location = new System.Drawing.Point(1098, 89);
+            this.btnServerRefresh.Location = new System.Drawing.Point(1088, 78);
             this.btnServerRefresh.Name = "btnServerRefresh";
-            this.btnServerRefresh.Size = new System.Drawing.Size(84, 35);
+            this.btnServerRefresh.Size = new System.Drawing.Size(84, 33);
             this.btnServerRefresh.TabIndex = 29;
             this.btnServerRefresh.Text = "Refresh";
             this.btnServerRefresh.UseVisualStyleBackColor = true;
@@ -266,7 +270,7 @@
             // 
             this.lblClientVal.AutoSize = true;
             this.lblClientVal.ForeColor = System.Drawing.Color.Green;
-            this.lblClientVal.Location = new System.Drawing.Point(509, 166);
+            this.lblClientVal.Location = new System.Drawing.Point(510, 160);
             this.lblClientVal.Name = "lblClientVal";
             this.lblClientVal.Size = new System.Drawing.Size(0, 17);
             this.lblClientVal.TabIndex = 33;
@@ -292,7 +296,7 @@
             "tblTestCTSH",
             "tblTestSTC",
             "tblTestTWS"});
-            this.cbTblType.Location = new System.Drawing.Point(717, 12);
+            this.cbTblType.Location = new System.Drawing.Point(172, 78);
             this.cbTblType.Name = "cbTblType";
             this.cbTblType.Size = new System.Drawing.Size(158, 24);
             this.cbTblType.TabIndex = 35;
@@ -300,7 +304,7 @@
             // 
             // btnCreateServerTable
             // 
-            this.btnCreateServerTable.Location = new System.Drawing.Point(1098, 12);
+            this.btnCreateServerTable.Location = new System.Drawing.Point(1300, 12);
             this.btnCreateServerTable.Name = "btnCreateServerTable";
             this.btnCreateServerTable.Size = new System.Drawing.Size(102, 35);
             this.btnCreateServerTable.TabIndex = 36;
@@ -330,12 +334,54 @@
             this.dgvServerRecords.RowTemplate.Height = 24;
             this.dgvServerRecords.Size = new System.Drawing.Size(782, 547);
             this.dgvServerRecords.TabIndex = 38;
+            this.dgvServerRecords.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvServerRecords_CellClick);
+            // 
+            // cbServerTableType
+            // 
+            this.cbServerTableType.FormattingEnabled = true;
+            this.cbServerTableType.Items.AddRange(new object[] {
+            "tblTestACTS",
+            "tblTestACTSH",
+            "tblTestASTC",
+            "tblTestATWS",
+            "tblTestCTS",
+            "tblTestCTSH",
+            "tblTestSTC",
+            "tblTestTWS"});
+            this.cbServerTableType.Location = new System.Drawing.Point(1188, 78);
+            this.cbServerTableType.Name = "cbServerTableType";
+            this.cbServerTableType.Size = new System.Drawing.Size(158, 24);
+            this.cbServerTableType.TabIndex = 39;
+            this.cbServerTableType.SelectedIndexChanged += new System.EventHandler(this.cbServerTableType_SelectedIndexChanged);
+            // 
+            // btnClientReset
+            // 
+            this.btnClientReset.Location = new System.Drawing.Point(509, 89);
+            this.btnClientReset.Name = "btnClientReset";
+            this.btnClientReset.Size = new System.Drawing.Size(58, 35);
+            this.btnClientReset.TabIndex = 40;
+            this.btnClientReset.Text = "Reset";
+            this.btnClientReset.UseVisualStyleBackColor = true;
+            this.btnClientReset.Click += new System.EventHandler(this.btnClientReset_Click);
+            // 
+            // btnServerReset
+            // 
+            this.btnServerReset.Location = new System.Drawing.Point(1541, 89);
+            this.btnServerReset.Name = "btnServerReset";
+            this.btnServerReset.Size = new System.Drawing.Size(58, 35);
+            this.btnServerReset.TabIndex = 41;
+            this.btnServerReset.Text = "Reset";
+            this.btnServerReset.UseVisualStyleBackColor = true;
+            this.btnServerReset.Click += new System.EventHandler(this.btnServerReset_Click);
             // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 797);
+            this.Controls.Add(this.btnServerReset);
+            this.Controls.Add(this.btnClientReset);
+            this.Controls.Add(this.cbServerTableType);
             this.Controls.Add(this.dgvServerRecords);
             this.Controls.Add(this.lblServerErrorVal);
             this.Controls.Add(this.btnCreateServerTable);
@@ -404,5 +450,8 @@
         private System.Windows.Forms.Button btnCreateServerTable;
         private System.Windows.Forms.Label lblServerErrorVal;
         private System.Windows.Forms.DataGridView dgvServerRecords;
+        private System.Windows.Forms.ComboBox cbServerTableType;
+        private System.Windows.Forms.Button btnClientReset;
+        private System.Windows.Forms.Button btnServerReset;
     }
 }

@@ -73,27 +73,21 @@ namespace OfflineSync.Client.Utilities
                         model = await syncAPI.Post<APIModel, APIModel>(model, url);
                     }
 
-                    List<T> serverList = null;
-                    List<T> insertList = null;
-                    List<T> modifiedList = null;
+                    List<T> serverList = new List<T>();
+                    List<T> insertList = new List<T>(); ;
+                    List<T> modifiedList = new List<T>(); ;
 
                     if (model.Data != null)
                     {
                         serverList = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
-
-                        //TODO need to check for null logic, if date can be null in any scenario
-                        //var lastSyncedAt = serverList.OrderByDescending(m => m.SyncModifiedAt)
-                        //                  .FirstOrDefault().SyncModifiedAt;
-                        //_dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
                     }
 
                     if (model.SyncType == SyncType.SyncServerToClient && serverList != null)
                     {
-                        insertList = new List<T>();
-
                         foreach (var item in serverList)
                         {
-                            if (DateTime.Compare(Convert.ToDateTime(settings.LastSyncedAt), Convert.ToDateTime(item.SyncCreatedAt)) < 0)
+                            if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(settings.LastSyncedAt).ToString("yyyy-MM-dd hh:mm:ss")),
+                                                 Convert.ToDateTime(Convert.ToDateTime(item.SyncCreatedAt).ToString("yyyy-MM-dd hh:mm:ss"))) < 0)
                             {
                                 insertList.Add(item);
                             }
@@ -103,14 +97,18 @@ namespace OfflineSync.Client.Utilities
                             }
                         }
 
-                        if (insertList != null)
+                        if (insertList.Count > 0)
                         {
                             _dBOperations.InsertList<T>(insertList);
                         }
-                        if (modifiedList != null)
+                        if (modifiedList.Count > 0)
                         {
                             _dBOperations.UpdateList<T>(modifiedList);
                         }
+
+                        var lastSyncedAt = serverList.OrderByDescending(m => m.SyncModifiedAt)
+                                          .FirstOrDefault().SyncModifiedAt;
+                        _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
                     }
                     else
                     {
@@ -137,7 +135,8 @@ namespace OfflineSync.Client.Utilities
                             foreach (var item in serverList)
                             {
                                 // Insert logic
-                                if (DateTime.Compare(Convert.ToDateTime(settings.LastSyncedAt), Convert.ToDateTime(item.SyncCreatedAt)) < 0)
+                                if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(settings.LastSyncedAt).ToString("yyyy-MM-dd hh:mm:ss")),
+                                                Convert.ToDateTime(Convert.ToDateTime(item.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss"))) < 0)
                                 {
                                     insertList.Add(item);
                                 }
@@ -151,7 +150,8 @@ namespace OfflineSync.Client.Utilities
                                     {
                                         if (settings.Priority == OveridePriority.LastUpdated)
                                         {
-                                            if (DateTime.Compare(Convert.ToDateTime(item.SyncModifiedAt), Convert.ToDateTime(updatedRec.SyncModifiedAt)) > 0)
+                                            if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(item.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss")),
+                                                Convert.ToDateTime(Convert.ToDateTime(updatedRec.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss"))) > 0)
                                             {
                                                 modifiedList.Add(item);
                                                 clientList.Remove(updatedRec);
@@ -175,11 +175,11 @@ namespace OfflineSync.Client.Utilities
                                 }
                             }
 
-                            if (insertList != null)
+                            if (insertList.Count > 0)
                             {
                                 _dBOperations.InsertList<T>(insertList);
                             }
-                            if (modifiedList != null)
+                            if (modifiedList.Count > 0)
                             {
                                 _dBOperations.UpdateList<T>(modifiedList);
                             }
@@ -188,6 +188,12 @@ namespace OfflineSync.Client.Utilities
                             {
                                 model.Data = clientList;
                                 PostDataAsync(model);
+
+                                //TODO need to check for null logic, if date can be null in any scenario
+                                var lastSyncedAt = ((List<T>)model.Data).OrderByDescending(m => m.SyncModifiedAt)
+                                                  .FirstOrDefault().SyncModifiedAt;
+
+                                _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
                             }
                         }
                     }

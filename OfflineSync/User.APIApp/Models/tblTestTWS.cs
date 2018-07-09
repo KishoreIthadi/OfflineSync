@@ -1,11 +1,11 @@
-﻿using System;
+﻿using OfflineSync.Server.Models.SQLServer;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using OfflineSync.Server.Models;
 
 namespace User.APIApp
 {
-    public class tblTestTWS : ISyncServerBaseModel
+    public class tblTestTWS : ISQLSyncServerModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

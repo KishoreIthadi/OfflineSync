@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OfflineSync.Server.Models
+namespace OfflineSync.Server.Models.BaseModels
 {
     public interface ISyncServerBaseModel
     {

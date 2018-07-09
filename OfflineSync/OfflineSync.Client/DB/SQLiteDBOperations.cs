@@ -8,6 +8,7 @@ using OfflineSync.Client.Models;
 using OfflineSync.DomainModel.Utilities;
 using OfflineSync.Client.Models.BaseModels;
 using OfflineSync.Client.Models.SQLite;
+using Newtonsoft.Json;
 
 namespace OfflineSync.Client.DB
 {
@@ -166,7 +167,38 @@ namespace OfflineSync.Client.DB
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                conn.UpdateAll(list);
+                var temp = conn.Table<T>().Table.Columns.Where(m => m.IsAutoInc).FirstOrDefault();
+
+                var autoIncCol = temp != null ? temp.Name : string.Empty;
+                var columns = conn.Table<T>().Table.Columns;
+
+                foreach (var item in list)
+                {
+                    var DBrec = conn.Table<T>().ToList().Where(m => m.VersionID == item.VersionID).FirstOrDefault();
+
+                    if (DBrec != null)
+                    {
+                        var itemJson = JsonConvert.SerializeObject(item);
+                        var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
+
+                        var UpdateItemJson = JsonConvert.SerializeObject(DBrec);
+                        var UpdateItemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(UpdateItemJson);
+
+                        foreach (var key in itemDict.Keys)
+                        {
+                            // ecluding if it is autoincrement column
+                            if (key != autoIncCol)
+                            {
+                                UpdateItemDict[key] = itemDict[key];
+                            }
+                        }
+
+                        var finalJson = JsonConvert.SerializeObject(UpdateItemDict);
+                        var finalRec = JsonConvert.DeserializeObject<T>(finalJson);
+
+                        conn.Update(finalRec);
+                    }
+                }
             }
         }
 
@@ -245,7 +277,7 @@ namespace OfflineSync.Client.DB
             }
         }
 
-        public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model) 
+        public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model)
         {
             using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
             {

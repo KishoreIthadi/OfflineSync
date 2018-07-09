@@ -21,15 +21,8 @@ namespace User.FormsApp
 
         private void HomeForm_Load(object sender, EventArgs e)
         {
-           
-        }
 
-        private void cbTblType_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            btnClientRefresh_Click(null, null);
-            btnServerRefresh_Click(null, null);
         }
-
 
         #region Client
 
@@ -417,7 +410,7 @@ namespace User.FormsApp
             {
                 ClearClientValidations();
 
-                if (e.RowIndex > 0)
+                if (e.RowIndex >= 0)
                 {
                     DataGridViewRow selectedRow = dgvRecords.Rows[e.RowIndex];
 
@@ -434,13 +427,19 @@ namespace User.FormsApp
             }
         }
 
+        private void cbTblType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnClientRefresh_Click(null, null);
+        }
+
         private void UpdateLastSyncDateTime()
         {
             try
             {
                 using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
                 {
-                    var rec = conn.Table<SQLiteSyncSettingsModel>().ToList().Where(m => m.ClientTableName == "tblTestACTS").FirstOrDefault();
+                    var rec = conn.Table<SQLiteSyncSettingsModel>().ToList()
+                        .Where(m => m.ClientTableName == cbTblType.SelectedItem.ToString()).FirstOrDefault();
 
                     if (rec != null)
                     {
@@ -524,6 +523,17 @@ namespace User.FormsApp
             lblClientVal.Text = string.Empty;
         }
 
+        private void btnClientReset_Click(object sender, EventArgs e)
+        {
+            txtClientName.Text = string.Empty;
+            txtClientID.Text = string.Empty;
+            btnClientAdd.Enabled = true;
+            btnClientUpdate.Enabled = false;
+
+            lblClientErrorVal.Text = string.Empty;
+            lblClientVal.Text = string.Empty;
+        }
+
         #endregion Client
 
 
@@ -537,55 +547,52 @@ namespace User.FormsApp
             {
                 ClearServerValidations();
 
-                using (SqlConnection conn = new SqlConnection(""))
+                using (SqlConnection conn = new SqlConnection(_connString))
                 {
-                    SqlCommand cmd = new SqlCommand("");
-                    cmd.CommandText = "";
+                    string query = string.Empty;
 
-                    switch (cbTblType.SelectedItem)
+                    switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
-                            cmd.CommandText = "INSERT INTO tblTestACTS Values";
-                            cmd.ExecuteNonQuery();
+                            query = "INSERT INTO [dbo].[tblTestACTS]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
+                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
                             break;
                         case "tblTestACTSH":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "INSERT INTO [dbo].[tblTestACTSH]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
+                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
                             break;
                         case "tblTestASTC":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "INSERT INTO [dbo].[tblTestASTC]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
+                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
                             break;
                         case "tblTestATWS":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "INSERT INTO [dbo].[tblTestATWS]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
+                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
                             break;
                         case "tblTestCTS":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "";
                             break;
                         case "tblTestCTSH":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "";
                             break;
                         case "tblTestSTC":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "";
                             break;
                         case "tblTestTWS":
-                            cmd.CommandText = "";
-                            cmd.ExecuteNonQuery();
+                            query = "";
                             break;
                     }
+
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
                 }
 
-                UpdateClientGrid();
+                UpdateServerGrid();
 
-                lblClientVal.Text = "Record Added Sucessfully";
-
-                txtClientName.Text = string.Empty;
-
-                UpdateLastSyncDateTime();
+                lblServerVal.Text = "Record Added Sucessfully";
+                txtServerName.Text = string.Empty;
             }
             catch (Exception ex)
             {
@@ -595,7 +602,70 @@ namespace User.FormsApp
 
         private void btnServerUpdate_Click(object sender, EventArgs e)
         {
+            try
+            {
+                ClearServerValidations();
 
+                using (SqlConnection conn = new SqlConnection(_connString))
+                {
+                    string query = string.Empty;
+
+                    switch (cbServerTableType.SelectedItem)
+                    {
+                        case "tblTestACTS":
+                            query = "UPDATE [dbo].[tblTestACTS] SET [Name] = '" + txtServerName.Text + "'," +
+                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                                     "WHERE ID=" + txtServerID.Text + ";";
+                            break;
+                        case "tblTestACTSH":
+                            query = "UPDATE [dbo].[tblTestACTSH] SET [Name] = '" + txtServerName.Text + "'," +
+                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                                     "WHERE ID = " + txtServerID.Text + ";";
+                            break;
+                        case "tblTestASTC":
+                            query = "UPDATE [dbo].[tblTestASTC] SET [Name] = '" + txtServerName.Text + "'," +
+                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                                     "WHERE ID = " + txtServerID.Text + ";";
+                            break;
+                        case "tblTestATWS":
+                            query = "UPDATE [dbo].[tblTestATWS] SET [Name] = '" + txtServerName.Text + "'," +
+                                     "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                                      "WHERE ID = " + txtServerID.Text + ";";
+                            break;
+                        case "tblTestCTS":
+                            query = "";
+                            break;
+                        case "tblTestCTSH":
+                            query = "";
+                            break;
+                        case "tblTestSTC":
+                            query = "";
+                            break;
+                        case "tblTestTWS":
+                            query = "";
+                            break;
+                    }
+
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(query, conn);
+                    cmd.ExecuteNonQuery();
+                    conn.Close();
+                }
+
+                UpdateServerGrid();
+
+                lblServerVal.Text = "Record Updated Sucessfully";
+
+                txtServerID.Text = string.Empty;
+                txtServerName.Text = string.Empty;
+
+                btnServerUpdate.Enabled = false;
+                btnServerAdd.Enabled = true;
+            }
+            catch (Exception ex)
+            {
+                lblClientErrorVal.Text = ex.Message;
+            }
         }
 
         private void btnServerRefresh_Click(object sender, EventArgs e)
@@ -695,7 +765,7 @@ namespace User.FormsApp
                     DataSet dataSet = new DataSet();
                     string command = "SELECT * FROM ";
 
-                    switch (cbTblType.SelectedItem)
+                    switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
                             command += "tblTestACTS";
@@ -723,7 +793,7 @@ namespace User.FormsApp
                             break;
                     }
 
-                    if (cbTblType.SelectedItem != null)
+                    if (cbServerTableType.SelectedItem != null)
                     {
                         adapter = new SqlDataAdapter(command, conn);
                         adapter.Fill(dataSet);
@@ -737,6 +807,44 @@ namespace User.FormsApp
             }
         }
 
+        private void cbServerTableType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnServerRefresh_Click(null, null);
+        }
+
+        private void dgvServerRecords_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                ClearServerValidations();
+
+                if (e.RowIndex >= 0)
+                {
+                    DataGridViewRow selectedRow = dgvServerRecords.Rows[e.RowIndex];
+
+                    txtServerID.Text = selectedRow.Cells["ID"].Value.ToString();
+                    txtServerName.Text = selectedRow.Cells["Name"].Value.ToString();
+
+                    btnServerUpdate.Enabled = true;
+                    btnServerAdd.Enabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                lblServerErrorVal.Text = ex.Message;
+            }
+        }
+
+        private void btnServerReset_Click(object sender, EventArgs e)
+        {
+            txtServerName.Text = string.Empty;
+            txtServerID.Text = string.Empty;
+            btnServerAdd.Enabled = true;
+            btnServerUpdate.Enabled = false;
+
+            lblServerErrorVal.Text = string.Empty;
+            lblServerVal.Text = string.Empty;
+        }
 
         #endregion Server
     }

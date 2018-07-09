@@ -74,9 +74,12 @@
     <Compile Include="DB\IDBOperations.cs" />
     <Compile Include="DB\SQLServerDBOperations.cs" />
     <Compile Include="Enums\ServerDBType.cs" />
-    <Compile Include="Models\ISyncServerBaseModel.cs" />
-    <Compile Include="Models\tblSyncDevice.cs" />
-    <Compile Include="Models\tblSyncTransaction.cs" />
+    <Compile Include="Models\BaseModels\ISyncServerBaseModel.cs" />
+    <Compile Include="Models\SQLServer\ISQLSyncServerModel.cs" />
+    <Compile Include="Models\SQLServer\tblSyncDevice.cs" />
+    <Compile Include="Models\SQLServer\tblSyncTransaction.cs" />
+    <Compile Include="Models\BaseModels\IBaseSyncDevice.cs" />
+    <Compile Include="Models\BaseModels\IBaseSyncTransaction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

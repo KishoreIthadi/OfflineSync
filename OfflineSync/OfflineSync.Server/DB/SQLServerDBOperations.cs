@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using OfflineSync.DomainModel.Models;
-using OfflineSync.Server.Models;
+using OfflineSync.Server.Models.SQLServer;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -18,7 +18,7 @@ namespace OfflineSync.Server.DB
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            // make sure the table names doesn't changes
+            // table names doesn't changes
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
         }
 
@@ -54,7 +54,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public List<T> GetData<T>() where T : class, ISyncServerBaseModel
+        public List<T> GetData<T>() where T : class, ISQLSyncServerModel
         {
             using (SQLContext<T> db = new SQLContext<T>())
             {
@@ -66,7 +66,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public List<T> GetDataByLastSyncDate<T>(DateTime dt) where T : class, ISyncServerBaseModel
+        public List<T> GetDataByLastSyncDate<T>(DateTime dt) where T : class, ISQLSyncServerModel
         {
             using (SQLContext<T> db = new SQLContext<T>())
             {
@@ -78,7 +78,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public void UpdateFailedTransactions<T>(APIModel model) where T : class, ISyncServerBaseModel
+        public void UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel
         {
             List<T> list = JsonConvert.DeserializeObject<List<T>>(model.FailedTrasationData.ToString());
 
@@ -122,10 +122,15 @@ namespace OfflineSync.Server.DB
                     if (updatedItem != null)
                     {
                         var adapter = (IObjectContextAdapter)db;
-                        var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
-                                        .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
 
-                        // Need to get the list of autoincrement columns
+                        // gets primary key column names
+                        //var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
+                        //               .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
+
+                        // gets identity columns names
+                        var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
+                                       .EntitySet.ElementType.Members.Where(m => m.MetadataProperties
+                                       .Any(n => n.Value.ToString() == "Identity")).Select(m => m.Name);
 
                         var itemJson = JsonConvert.SerializeObject(item);
                         var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
@@ -163,7 +168,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public void InsertUpdate<T>(APIModel model) where T : class, ISyncServerBaseModel
+        public void InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel
         {
 
             List<T> list = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
