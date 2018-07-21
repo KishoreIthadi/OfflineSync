@@ -6,7 +6,7 @@ namespace OfflineSync.Server.Models.BaseModels
     {
         string VersionID { get; set; }
         string TransactionID { get; set; }
-        DateTime SyncCreatedAt { get; }
-        DateTime SyncModifiedAt { get; }
+        DateTime? SyncCreatedAt { get; }
+        DateTime? SyncModifiedAt { get; }
     }
 }

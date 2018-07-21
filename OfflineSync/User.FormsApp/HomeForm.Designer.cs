@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btnClientAddSettings = new System.Windows.Forms.Button();
             this.btnClientRefresh = new System.Windows.Forms.Button();
             this.dgvRecords = new System.Windows.Forms.DataGridView();
@@ -54,10 +55,10 @@
             this.cbTblType = new System.Windows.Forms.ComboBox();
             this.btnCreateServerTable = new System.Windows.Forms.Button();
             this.lblServerErrorVal = new System.Windows.Forms.Label();
-            this.dgvServerRecords = new System.Windows.Forms.DataGridView();
             this.cbServerTableType = new System.Windows.Forms.ComboBox();
             this.btnClientReset = new System.Windows.Forms.Button();
             this.btnServerReset = new System.Windows.Forms.Button();
+            this.dgvServerRecords = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.dgvRecords)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvServerRecords)).BeginInit();
             this.SuspendLayout();
@@ -321,21 +322,6 @@
             this.lblServerErrorVal.Size = new System.Drawing.Size(0, 17);
             this.lblServerErrorVal.TabIndex = 37;
             // 
-            // dgvServerRecords
-            // 
-            this.dgvServerRecords.AllowUserToAddRows = false;
-            this.dgvServerRecords.AllowUserToDeleteRows = false;
-            this.dgvServerRecords.AllowUserToOrderColumns = true;
-            this.dgvServerRecords.BackgroundColor = System.Drawing.Color.White;
-            this.dgvServerRecords.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvServerRecords.Location = new System.Drawing.Point(825, 227);
-            this.dgvServerRecords.Name = "dgvServerRecords";
-            this.dgvServerRecords.ReadOnly = true;
-            this.dgvServerRecords.RowTemplate.Height = 24;
-            this.dgvServerRecords.Size = new System.Drawing.Size(782, 547);
-            this.dgvServerRecords.TabIndex = 38;
-            this.dgvServerRecords.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvServerRecords_CellClick);
-            // 
             // cbServerTableType
             // 
             this.cbServerTableType.FormattingEnabled = true;
@@ -374,15 +360,32 @@
             this.btnServerReset.UseVisualStyleBackColor = true;
             this.btnServerReset.Click += new System.EventHandler(this.btnServerReset_Click);
             // 
+            // dgvServerRecords
+            // 
+            this.dgvServerRecords.AllowUserToAddRows = false;
+            this.dgvServerRecords.AllowUserToDeleteRows = false;
+            this.dgvServerRecords.AllowUserToOrderColumns = true;
+            this.dgvServerRecords.BackgroundColor = System.Drawing.Color.White;
+            this.dgvServerRecords.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvServerRecords.Location = new System.Drawing.Point(817, 227);
+            this.dgvServerRecords.Name = "dgvServerRecords";
+            this.dgvServerRecords.ReadOnly = true;
+            dataGridViewCellStyle1.NullValue = null;
+            this.dgvServerRecords.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            this.dgvServerRecords.RowTemplate.Height = 24;
+            this.dgvServerRecords.Size = new System.Drawing.Size(782, 547);
+            this.dgvServerRecords.TabIndex = 42;
+            this.dgvServerRecords.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvServerRecords_CellClick);
+            // 
             // HomeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1924, 797);
+            this.Controls.Add(this.dgvServerRecords);
             this.Controls.Add(this.btnServerReset);
             this.Controls.Add(this.btnClientReset);
             this.Controls.Add(this.cbServerTableType);
-            this.Controls.Add(this.dgvServerRecords);
             this.Controls.Add(this.lblServerErrorVal);
             this.Controls.Add(this.btnCreateServerTable);
             this.Controls.Add(this.cbTblType);
@@ -449,9 +452,9 @@
         private System.Windows.Forms.ComboBox cbTblType;
         private System.Windows.Forms.Button btnCreateServerTable;
         private System.Windows.Forms.Label lblServerErrorVal;
-        private System.Windows.Forms.DataGridView dgvServerRecords;
         private System.Windows.Forms.ComboBox cbServerTableType;
         private System.Windows.Forms.Button btnClientReset;
         private System.Windows.Forms.Button btnServerReset;
+        private System.Windows.Forms.DataGridView dgvServerRecords;
     }
 }

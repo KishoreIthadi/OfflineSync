@@ -74,8 +74,8 @@ namespace OfflineSync.Client.Utilities
                     }
 
                     List<T> serverList = new List<T>();
-                    List<T> insertList = new List<T>(); ;
-                    List<T> modifiedList = new List<T>(); ;
+                    List<T> insertList = new List<T>();
+                    List<T> modifiedList = new List<T>();
 
                     if (model.Data != null)
                     {
@@ -86,8 +86,7 @@ namespace OfflineSync.Client.Utilities
                     {
                         foreach (var item in serverList)
                         {
-                            if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(settings.LastSyncedAt).ToString("yyyy-MM-dd hh:mm:ss")),
-                                                 Convert.ToDateTime(Convert.ToDateTime(item.SyncCreatedAt).ToString("yyyy-MM-dd hh:mm:ss"))) < 0)
+                            if (DateTime.Compare(Convert.ToDateTime(settings.LastSyncedAt), Convert.ToDateTime(item.SyncCreatedAt)) < 0)
                             {
                                 insertList.Add(item);
                             }
@@ -135,37 +134,47 @@ namespace OfflineSync.Client.Utilities
                             foreach (var item in serverList)
                             {
                                 // Insert logic
-                                if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(settings.LastSyncedAt).ToString("yyyy-MM-dd hh:mm:ss")),
-                                                Convert.ToDateTime(Convert.ToDateTime(item.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss"))) < 0)
+                                if (DateTime.Compare(Convert.ToDateTime(settings.LastSyncedAt), Convert.ToDateTime(item.SyncCreatedAt)) < 0)
                                 {
                                     insertList.Add(item);
                                 }
                                 else
                                 {
                                     // update and delete logic
-                                    var updatedRec = clientList.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
 
                                     // If record is modified both at the server and at the client
-                                    if (updatedRec != null)
+                                    if (clientList != null)
                                     {
-                                        if (settings.Priority == OveridePriority.LastUpdated)
+                                        T updatedRec = clientList.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
+
+                                        if (updatedRec != null)
                                         {
-                                            if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(item.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss")),
-                                                Convert.ToDateTime(Convert.ToDateTime(updatedRec.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss"))) > 0)
+                                            if (settings.Priority == OveridePriority.LastUpdated)
+                                            {
+                                                //if (DateTime.Compare(Convert.ToDateTime(Convert.ToDateTime(item.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss")),
+                                                //    Convert.ToDateTime(Convert.ToDateTime(updatedRec.SyncModifiedAt).ToString("yyyy-MM-dd hh:mm:ss"))) > 0)
+                                                if (DateTime.Compare(Convert.ToDateTime(item.SyncModifiedAt), Convert.ToDateTime(updatedRec.SyncModifiedAt)) > 0)
+                                                {
+                                                    modifiedList.Add(item);
+                                                    clientList.Remove(updatedRec);
+                                                }
+                                            }
+                                            else if (settings.Priority == OveridePriority.Server)
                                             {
                                                 modifiedList.Add(item);
                                                 clientList.Remove(updatedRec);
                                             }
+                                            //else if (settings.Priority == OveridePriority.User)
+                                            //{
+                                            //    // TODO Next release
+                                            //}
+
                                         }
-                                        else if (settings.Priority == OveridePriority.Server)
+                                        else
                                         {
+                                            //If the record is only modified at the server.(No Conflict)
                                             modifiedList.Add(item);
-                                            clientList.Remove(updatedRec);
                                         }
-                                        //else if (settings.Priority == OveridePriority.User)
-                                        //{
-                                        //    // TODO Next release
-                                        //}
                                     }
                                     else
                                     {
@@ -184,16 +193,35 @@ namespace OfflineSync.Client.Utilities
                                 _dBOperations.UpdateList<T>(modifiedList);
                             }
 
-                            if (clientList != null)
+                            var clientLastSyncedAt = DateTime.MinValue.ToString();
+                            var serverLastSyncedAt = DateTime.MinValue.ToString();
+
+                            if (clientList != null && clientList.Count > 0)
                             {
                                 model.Data = clientList;
-                                PostDataAsync(model);
+                                await PostDataAsync(model);
 
                                 //TODO need to check for null logic, if date can be null in any scenario
-                                var lastSyncedAt = ((List<T>)model.Data).OrderByDescending(m => m.SyncModifiedAt)
-                                                  .FirstOrDefault().SyncModifiedAt;
+                                clientLastSyncedAt = clientList.OrderByDescending(m => m.SyncModifiedAt)
+                                                 .FirstOrDefault().SyncModifiedAt;
+                            }
 
-                                _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
+                            if (serverList != null && serverList.Count > 0)
+                            {
+                                serverLastSyncedAt = serverList.OrderByDescending(m => m.SyncModifiedAt)
+                                                 .FirstOrDefault().SyncModifiedAt;
+                            }
+
+                            if ((clientList != null && clientList.Count > 0) || (serverList != null && serverList.Count > 0))
+                            {
+                                if (DateTime.Compare(Convert.ToDateTime(clientLastSyncedAt), Convert.ToDateTime(serverLastSyncedAt)) > 0)
+                                {
+                                    _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(clientLastSyncedAt));
+                                }
+                                else
+                                {
+                                    _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(serverLastSyncedAt));
+                                }
                             }
                         }
                     }

@@ -554,20 +554,20 @@ namespace User.FormsApp
                     switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
-                            query = "INSERT INTO [dbo].[tblTestACTS]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
-                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
+                            query = "INSERT INTO [dbo].[tblTestACTS]([Name]) VALUES ('"
+                                + txtServerName.Text + "')";
                             break;
                         case "tblTestACTSH":
-                            query = "INSERT INTO [dbo].[tblTestACTSH]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
-                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
+                            query = "INSERT INTO [dbo].[tblTestACTSH]([Name]) VALUES ('"
+                                + txtServerName.Text + "')";
                             break;
                         case "tblTestASTC":
-                            query = "INSERT INTO [dbo].[tblTestASTC]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
-                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
+                            query = "INSERT INTO [dbo].[tblTestASTC]([Name]) VALUES ('"
+                                + txtServerName.Text + "')";
                             break;
                         case "tblTestATWS":
-                            query = "INSERT INTO [dbo].[tblTestATWS]([Name],[SyncCreatedAt],[SyncModifiedAt]) VALUES ('"
-                                + txtServerName.Text + "','" + DateTime.Now + "','" + DateTime.Now + "')";
+                            query = "INSERT INTO [dbo].[tblTestATWS]([Name]) VALUES ('"
+                                + txtServerName.Text + "')";
                             break;
                         case "tblTestCTS":
                             query = "";
@@ -613,23 +613,19 @@ namespace User.FormsApp
                     switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
-                            query = "UPDATE [dbo].[tblTestACTS] SET [Name] = '" + txtServerName.Text + "'," +
-                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                            query = "UPDATE [dbo].[tblTestACTS] SET [Name] = '" + txtServerName.Text + "' " +
                                      "WHERE ID=" + txtServerID.Text + ";";
                             break;
                         case "tblTestACTSH":
-                            query = "UPDATE [dbo].[tblTestACTSH] SET [Name] = '" + txtServerName.Text + "'," +
-                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                            query = "UPDATE [dbo].[tblTestACTSH] SET [Name] = '" + txtServerName.Text + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestASTC":
-                            query = "UPDATE [dbo].[tblTestASTC] SET [Name] = '" + txtServerName.Text + "'," +
-                                    "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                            query = "UPDATE [dbo].[tblTestASTC] SET [Name] = '" + txtServerName.Text + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestATWS":
-                            query = "UPDATE [dbo].[tblTestATWS] SET [Name] = '" + txtServerName.Text + "'," +
-                                     "[SyncModifiedAt] = '" + DateTime.Now + "' " +
+                            query = "UPDATE [dbo].[tblTestATWS] SET [Name] = '" + txtServerName.Text + "' " +
                                       "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestCTS":
@@ -695,42 +691,42 @@ namespace User.FormsApp
                     cmd.CommandText = "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestACTS' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestACTS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestACTSH' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestACTSH]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestASTC' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestASTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestATWS' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestATWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestCTS' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestCTS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestCTSH' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestCTSH]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestSTC' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestSTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) " +
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestTWS' AND xtype='U')" +
                                       "CREATE TABLE [dbo].[tblTestTWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
-                                      "[SyncCreatedAt] [datetime] NOT NULL,[SyncModifiedAt] [datetime] NOT NULL) ";
+                                      "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) ";
 
                     conn.Open();
                     cmd.ExecuteNonQuery();

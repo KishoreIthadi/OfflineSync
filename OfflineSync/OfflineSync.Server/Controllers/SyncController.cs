@@ -54,7 +54,7 @@ namespace OfflineSync.Server.Controllers
                    (model.SyncType == SyncType.SyncTwoWay ||
                     model.SyncType == SyncType.SyncServerToClient))
                 {
-                    if (model.LastSyncDate == null)
+                    if (model.LastSyncDate == null || model.LastSyncDate == DateTime.MinValue)
                     {
                         model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "GetData", null);
                     }

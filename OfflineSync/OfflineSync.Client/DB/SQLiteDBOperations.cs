@@ -56,8 +56,7 @@ namespace OfflineSync.Client.DB
                 else
                 {
                     res = conn.Table<T>().ToList()
-                              .Where(m => DateTime.Compare(lastsync.Value, Convert.ToDateTime(m.SyncModifiedAt)) < 0)
-                                                 .ToList();
+                              .Where(m => DateTime.Compare(lastsync.Value, Convert.ToDateTime(m.SyncModifiedAt)) < 0).ToList();
                 }
 
                 if (res.Count == 0) { return null; }
@@ -189,7 +188,14 @@ namespace OfflineSync.Client.DB
                             // ecluding if it is autoincrement column
                             if (key != autoIncCol)
                             {
-                                UpdateItemDict[key] = itemDict[key];
+                                if (key == "SyncCreatedAt" || key == "SyncModifiedAt")
+                                {
+                                    UpdateItemDict[key] = Convert.ToDateTime(itemDict[key].ToString().ToLower().Replace("t", " ")).ToString("yyyy-MM-dd hh:mm:ss");
+                                }
+                                else
+                                {
+                                    UpdateItemDict[key] = itemDict[key];
+                                }
                             }
                         }
 
@@ -224,20 +230,15 @@ namespace OfflineSync.Client.DB
                 //TODO need to optimize this logic
                 foreach (var item in transactionList)
                 {
-                    if (syncType == SyncType.SyncClientToServerAndHardDelete)
-                    {
-                        var list = conn.Table<T>().ToList().Where(m => m.TransactionID == item).ToList();
+                    var list = conn.Table<T>().ToList().Where(m => m.TransactionID == item).ToList();
 
-                        foreach (var rec in list)
+                    foreach (var rec in list)
+                    {
+                        if (syncType == SyncType.SyncClientToServerAndHardDelete)
                         {
                             conn.Delete(rec);
                         }
-                    }
-                    else
-                    {
-                        var list = conn.Table<T>().ToList().Where(m => m.TransactionID == item).ToList();
-
-                        foreach (var rec in list)
+                        else
                         {
                             rec.IsSynced = true;
                             rec.TransactionID = null;
@@ -314,31 +315,42 @@ namespace OfflineSync.Client.DB
                     try
                     {
                         string insertTrigger = "CREATE TRIGGER {0}_CreateTrigger" +
-                                     " AFTER INSERT ON {1}" +
+                                     " AFTER INSERT ON {0}" +
                                      " BEGIN" +
-                                     " UPDATE {2}" +
-                                     " SET SyncCreatedAt = DATETIME('NOW'), " +
-                                     " SyncModifiedAt = DATETIME('NOW')," +
-                                     " VersionID= CAST(hex(randomblob(16)) AS TEXT) || '-'  || +" +
-                                     "CAST((SELECT Value FROM Configurations WHERE KEY == 'DeviceID' )AS TEXT)" +
+                                     " UPDATE {0}" +
+                                     " SET SyncCreatedAt = STRFTIME('%Y-%m-%d %H:%M:%S', COALESCE(NEW.SyncCreatedAt, DATETIME('NOW')))," +
+                                     " SyncModifiedAt = STRFTIME('%Y-%m-%d %H:%M:%S', COALESCE(NEW.SyncModifiedAt, DATETIME('NOW')))," +
+                                     " VersionID = CAST(hex(randomblob(16)) AS TEXT) || '-' || +CAST((SELECT Value FROM Configurations WHERE[KEY] == 'DeviceID')AS TEXT)" +
                                      " WHERE VersionID IS NULL;" +
+                                     " UPDATE {0}" +
+                                     " SET SyncCreatedAt = STRFTIME('%Y-%m-%d %H:%M:%S', COALESCE(NEW.SyncCreatedAt, DATETIME('NOW')))," +
+                                     " SyncModifiedAt = STRFTIME('%Y-%m-%d %H:%M:%S', COALESCE(NEW.SyncModifiedAt, DATETIME('NOW')))" +
+                                     " WHERE VersionID = NEW.VersionID;" +
                                      " END;";
 
-                        conn.Execute(string.Format(insertTrigger, model.ClientTableName, model.ClientTableName, model.ClientTableName));
+                        conn.Execute(string.Format(insertTrigger, model.ClientTableName));
 
                         string updateTrigger = "CREATE TRIGGER {0}_ModifyTrigger" +
-                                     " AFTER UPDATE ON {1}" +
+                                     " AFTER UPDATE ON {0}" +
                                      " WHEN old.VersionID == new.VersionID" +
                                      " AND old.SyncModifiedAt == new.SyncModifiedAt" +
                                      " BEGIN" +
-                                     " Update {2}" +
-                                     " SET SyncModifiedAt = DATETIME('NOW')" +
-                                     " WHERE VersionID == old.VersionID" +
-                                     " AND ifnull(TransactionID,0) == ifnull(old.TransactionID,0)" +
-                                     " AND ifnull(IsSynced,0) == ifnull(old.IsSynced,0);" +
+                                     " Update {0}" +
+                                     " SET SyncModifiedAt = STRFTIME('%Y-%m-%d %H:%M:%S'," +
+                                     " CASE" +
+                                     " WHEN STRFTIME('%Y-%m-%d %H:%M:%S', NEW.SyncModifiedAt) > STRFTIME('%Y-%m-%d %H:%M:%S', OLD.SyncModifiedAt)" +
+                                     " THEN NEW.SyncModifiedAt" +
+                                     " WHEN STRFTIME('%Y-%m-%d %H:%M:%S', NEW.SyncModifiedAt) < STRFTIME('%Y-%m-%d %H:%M:%S', OLD.SyncModifiedAt)" +
+                                     " THEN OLD.SyncModifiedAt" +
+                                     " WHEN STRFTIME('%Y-%m-%d %H:%M:%S', NEW.SyncModifiedAt) = STRFTIME('%Y-%m-%d %H:%M:%S', OLD.SyncModifiedAt) " +
+                                     " THEN DATETIME('NOW')" +
+                                     " END)" +
+                                     " WHERE VersionID == old.VersionID AND" +
+                                     " ifnull(TransactionID, 0) == ifnull(old.TransactionID, 0) AND" +
+                                     " ifnull(IsSynced, 0) == ifnull(old.IsSynced, 0);" +
                                      " END;";
 
-                        conn.Execute(string.Format(updateTrigger, model.ClientTableName, model.ClientTableName, model.ClientTableName));
+                        conn.Execute(string.Format(updateTrigger, model.ClientTableName));
                     }
                     catch (Exception ex)
                     {

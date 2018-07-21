@@ -7,7 +7,7 @@ namespace OfflineSync.Server.Models.SQLServer
     {
         new string VersionID { get; set; }
         new string TransactionID { get; set; }
-        new DateTime SyncCreatedAt { get; }
-        new DateTime SyncModifiedAt { get; }
+        new DateTime? SyncCreatedAt { get; }
+        new DateTime? SyncModifiedAt { get; }
     }
 }

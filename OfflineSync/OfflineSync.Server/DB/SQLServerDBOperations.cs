@@ -70,7 +70,7 @@ namespace OfflineSync.Server.DB
         {
             using (SQLContext<T> db = new SQLContext<T>())
             {
-                var res = db.dbSet.Where(m => DateTime.Compare(dt, m.SyncModifiedAt) < 0).ToList();
+                var res = db.dbSet.Where(m => DateTime.Compare(dt, m.SyncModifiedAt.Value) < 0).ToList();
 
                 if (res.Count > 0) { return res; }
 
