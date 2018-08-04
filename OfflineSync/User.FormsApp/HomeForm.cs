@@ -32,9 +32,9 @@ namespace User.FormsApp
             {
                 ClearClientValidations();
 
-                GlobalConfig.DBPath = @"SyncDB.db";
-                GlobalConfig.Token = "";
-                GlobalConfig.APIUrl = @"http://localhost:64115/API/";
+                SyncGlobalConfig.DBPath = @"SyncDB.db";
+                SyncGlobalConfig.Token = "";
+                SyncGlobalConfig.APIUrl = @"http://localhost:64115/API/";
 
                 lblClientVal.Text = "Global config updated successfully";
             }
@@ -68,7 +68,7 @@ namespace User.FormsApp
             {
                 ClearClientValidations();
 
-                SQLite.SQLiteConnection db = new SQLite.SQLiteConnection(GlobalConfig.DBPath);
+                SQLite.SQLiteConnection db = new SQLite.SQLiteConnection(SyncGlobalConfig.DBPath);
                 db.CreateTable<tblTestACTS>();
                 db.CreateTable<tblTestACTSH>();
                 db.CreateTable<tblTestASTC>();
@@ -200,7 +200,7 @@ namespace User.FormsApp
             {
                 ClearClientValidations();
 
-                using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+                using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
                 {
                     switch (cbTblType.SelectedItem)
                     {
@@ -263,7 +263,7 @@ namespace User.FormsApp
             {
                 ClearClientValidations();
 
-                using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+                using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
                 {
                     dynamic rec = null;
 
@@ -386,7 +386,7 @@ namespace User.FormsApp
         {
             try
             {
-                using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+                using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
                 {
                     var rec = conn.Table<SQLiteSyncSettingsModel>().ToList()
                         .Where(m => m.ClientTableName == cbTblType.SelectedItem.ToString()).FirstOrDefault();
@@ -407,7 +407,7 @@ namespace User.FormsApp
         {
             try
             {
-                using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+                using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
                 {
                     var rec = conn.Table<SQLiteConfigurationsModel>()
                                           .ToList()
@@ -430,7 +430,7 @@ namespace User.FormsApp
         {
             try
             {
-                using (SQLiteConnection conn = new SQLiteConnection(GlobalConfig.DBPath))
+                using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
                 {
                     switch (cbTblType.SelectedItem)
                     {

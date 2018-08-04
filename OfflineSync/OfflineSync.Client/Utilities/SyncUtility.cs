@@ -19,7 +19,7 @@ namespace OfflineSync.Client.Utilities
 
         public SyncUtility()
         {
-            switch (GlobalConfig.DBType)
+            switch (SyncGlobalConfig.DBType)
             {
                 case ClientDBType.SQLite:
                     _dBOperations = new SQLiteDBOperations();
@@ -33,7 +33,7 @@ namespace OfflineSync.Client.Utilities
             {
                 List<ISyncSettingsBaseModel> settingslist = _dBOperations.GetSyncSettingByTable<ISyncSettingsBaseModel>(typeof(T).Name);
 
-                SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
+                SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
 
                 // Having dublicate entries
                 if (settingslist == null)
@@ -235,7 +235,7 @@ namespace OfflineSync.Client.Utilities
 
         internal async Task<APIModel> FailedTransactionsSync(APIModel model, ISyncSettingsBaseModel syncSettingsModel)
         {
-            SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
+            SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
 
             APIModel res = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.GetData);
 
@@ -324,7 +324,7 @@ namespace OfflineSync.Client.Utilities
             _dBOperations.UpdateIDS(clientList);
 
             //TODO Pagination
-            SyncAPIUtility syncAPI = new SyncAPIUtility(GlobalConfig.APIUrl, GlobalConfig.Token);
+            SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
 
             await syncAPI.Post<APIModel, APIModel>(model, StringUtility.PostData);
 
