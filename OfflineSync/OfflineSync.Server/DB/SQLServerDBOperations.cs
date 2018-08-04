@@ -273,6 +273,7 @@ namespace OfflineSync.Server.DB
             }
         }
     }
+
     public static class SQLServerDBUtility
     {
         public static void CreateGlobalTrigger()
@@ -281,6 +282,12 @@ namespace OfflineSync.Server.DB
             {
                 try
                 {
+                    db.Database.ExecuteSqlCommand(
+                        " IF EXISTS(SELECT 1 FROM sys.triggers WHERE Name = 'Trigger_Sync') " +
+                        " BEGIN " +
+                        " DROP TRIGGER Trigger_Sync ON DATABASE " +
+                        " END ");
+
                     db.Database.ExecuteSqlCommand(
                         " CREATE TRIGGER Trigger_Sync" +
                         " ON DATABASE" +
@@ -403,7 +410,7 @@ namespace OfflineSync.Server.DB
                         " EXEC(N'DROP TRIGGER ' + @TableName + '_SyncModifyTrigger'); " +
                         " END " +
                         " " +
-                       
+
                         " EXEC(N'CREATE TRIGGER ' + @TableName + '_SyncModifyTrigger ON ' + @TableName +" +
                         " ' AFTER UPDATE ' +" +
                         " ' AS' +" +

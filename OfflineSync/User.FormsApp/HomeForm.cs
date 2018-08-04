@@ -147,22 +147,26 @@ namespace User.FormsApp
                 syncSettings.Add(
                     new SQLiteSyncSettingsModel
                     {
-                        AutoSync = true,
+                        AutoSync = false,
                         ClientTableName = typeof(tblTestSTC).Name,
                         Priority = OveridePriority.LastUpdated,
                         SyncType = SyncType.SyncServerToClient,
-                        ControllerRoute = "HomeController/GetData",
+                        ControllerRoute = "Home/GetData",
+                        ControllerData = "tblTestSTC"
                     }
                 );
 
                 syncSettings.Add(
                    new SQLiteSyncSettingsModel
                    {
-                       AutoSync = true,
+                       AutoSync = false,
                        ClientTableName = typeof(tblTestTWS).Name,
                        Priority = OveridePriority.LastUpdated,
-                       ControllerRoute = "HomeController/GetData",
+                       ControllerRoute = "Home/GetData",
                        SyncType = SyncType.SyncTwoWay,
+                       ServerAssemblyName = "User.APIApp",
+                       ServerTableName = "tblTestATWS",
+                       ControllerData = "tblTestSTC"
                    }
                );
 
@@ -510,10 +514,12 @@ namespace User.FormsApp
                                 + txtServerName.Text + "')";
                             break;
                         case "tblTestSTC":
-                            query = "";
+                            query = "INSERT INTO [dbo].[tblTestSTC]([Name]) VALUES ('"
+                               + txtServerName.Text + "')";
                             break;
                         case "tblTestTWS":
-                            query = "";
+                            query = "INSERT INTO [dbo].[tblTestTWS]([Name]) VALUES ('"
+                                + txtServerName.Text + "')";
                             break;
                     }
 
@@ -563,10 +569,12 @@ namespace User.FormsApp
                                       "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestSTC":
-                            query = "";
+                            query = "UPDATE [dbo].[tblTestSTC] SET [Name] = '" + txtServerName.Text + "' " +
+                                     "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestTWS":
-                            query = "";
+                            query = "UPDATE [dbo].[tblTestTWS] SET [Name] = '" + txtServerName.Text + "' " +
+                                     "WHERE ID = " + txtServerID.Text + ";";
                             break;
                     }
 

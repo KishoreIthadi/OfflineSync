@@ -64,11 +64,11 @@ namespace OfflineSync.Client.Utilities
                         {
                             url = StringUtility.GetData;
                         }
-                        //else if (!model.AutoSync)
-                        //{
-                        //    // Calling the client API method and fetching the data
-                        //    url = model.ControllerRoute;
-                        //}
+                        else if (!model.AutoSync)
+                        {
+                            // Calling the client API method and fetching the data
+                            url = model.ControllerRoute;
+                        }
 
                         model = await syncAPI.Post<APIModel, APIModel>(model, url);
                     }
@@ -310,7 +310,7 @@ namespace OfflineSync.Client.Utilities
             // checking if the sync is autosync
             if (!settings.AutoSync)
             {
-                model.ControllerData = settings.Data;
+                model.ControllerData = settings.ControllerData;
                 model.ControllerRoute = settings.ControllerRoute;
             }
 
