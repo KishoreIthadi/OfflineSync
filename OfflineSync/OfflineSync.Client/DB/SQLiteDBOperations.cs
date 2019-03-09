@@ -20,10 +20,11 @@ namespace OfflineSync.Client.DB
         {
             _DBPath = SyncGlobalConfig.DBPath;
 
-            using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 conn.CreateTable<SQLiteConfigurationsModel>();
                 conn.CreateTable<SQLiteSyncSettingsModel>();
+                conn.CreateTable<SQLiteTransactionsModel>();
             }
         }
 
@@ -33,6 +34,68 @@ namespace OfflineSync.Client.DB
             {
                 var res = conn.Table<SQLiteSyncSettingsModel>()
                     .Where(m => m.ClientTableName == tableName).ToList<ISyncSettingsBaseModel>();
+
+                if (res.Count == 0) { return null; }
+
+                return res;
+            }
+        }
+
+        public string GetConfigurationByKey(string key)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                SQLiteConfigurationsModel configurationsModel = conn.Table<SQLiteConfigurationsModel>()
+                    .Where(m => m.Key == key).FirstOrDefault();
+
+                if (configurationsModel != null)
+                {
+                    return configurationsModel.Value;
+                }
+
+                return null;
+            }
+        }
+
+        public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, string deviceID) where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                foreach (var id in failedTransactionIDs)
+                {
+                    var list = conn.Table<T>().ToList().Where(m => m.TransactionID == id).ToList();
+
+                    string newID = Guid.NewGuid().ToString() + "-" + deviceID; ;
+
+                    while (conn.Table<T>().Any(m => m.TransactionID == newID))
+                    {
+                        newID = Guid.NewGuid().ToString() + "-" + deviceID;
+                    }
+
+                    foreach (var item in list)
+                    {
+                        item.TransactionID = newID;
+                    }
+
+                    conn.UpdateAll(list);
+                }
+            }
+        }
+
+        public void InsertConfigurationsModel(string key, string value)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                conn.Insert(new SQLiteConfigurationsModel { Key = key, Value = value });
+            }
+        }
+
+        public List<T> GetFailedTransactionData<T>() where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                //TODO alternate for .ToList()
+                var res = conn.Table<T>().ToList().Where(m => m.IsSynced == false && m.TransactionID != null).ToList();
 
                 if (res.Count == 0) { return null; }
 
@@ -61,95 +124,6 @@ namespace OfflineSync.Client.DB
                 if (res.Count == 0) { return null; }
 
                 return res;
-            }
-        }
-
-        public List<T> GetFailedTransactionData<T>() where T : ISyncClientBaseModel, new()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                //  return conn.Table<T>().Where(m => m.IsSynced == false).ToList();
-                //TODO alternate for .ToList()
-                var res = conn.Table<T>().ToList().Where(m => m.IsSynced == false && m.TransactionID != null).ToList();
-
-                if (res.Count == 0) { return null; }
-
-                return res;
-            }
-        }
-
-        public string GetConfigurationsByKey(string key)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                SQLiteConfigurationsModel configurationsModel = conn.Table<SQLiteConfigurationsModel>()
-                    .Where(m => m.Key == key).FirstOrDefault();
-
-                if (configurationsModel != null)
-                {
-                    return configurationsModel.Value;
-                }
-
-                return null;
-            }
-        }
-
-        public void InsertConfigurationsModel(string key, string value)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                conn.Insert(new SQLiteConfigurationsModel { Key = key, Value = value });
-            }
-        }
-
-        public void UpdateTransationIDs<T>(string[] failedTransactionIDs) where T : ISyncClientBaseModel, new()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                foreach (var id in failedTransactionIDs)
-                {
-                    var list = conn.Table<T>().Where(m => m.TransactionID == id).ToList();
-
-                    string newID = Guid.NewGuid().ToString();
-
-                    while (conn.Table<T>().Any(m => m.TransactionID == newID))
-                    {
-                        newID = Guid.NewGuid().ToString();
-                    }
-
-                    foreach (var item in list)
-                    {
-                        item.TransactionID = newID;
-                    }
-
-                    conn.UpdateAll(list);
-                }
-            }
-        }
-
-        public void UpdateConflictVersionIDs<T>(IEnumerable<FailedRecordsModel> conflictRecs)
-            where T : ISyncClientBaseModel, new()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                foreach (var rec in conflictRecs)
-                {
-                    var list = conn.Table<T>().Where(m => m.VersionID == rec.VersionID).ToList();
-
-                    string newID = Guid.NewGuid().ToString();
-
-                    while (conn.Table<T>().Any(m => m.VersionID == newID))
-                    {
-                        newID = Guid.NewGuid().ToString();
-                    }
-
-                    foreach (var item in list)
-                    {
-                        item.VersionID = newID;
-                    }
-
-                    conn.UpdateAll(list);
-                }
             }
         }
 
@@ -248,29 +222,43 @@ namespace OfflineSync.Client.DB
             }
         }
 
-        public void UpdateIDS<T>(List<T> clientList) where T : ISyncClientBaseModel, new()
+        public void SetTransationIDs<T>(List<T> clientList, string deviceID) where T : ISyncClientBaseModel, new()
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                string transactionID = Guid.NewGuid().ToString();
+                string transactionID = Guid.NewGuid().ToString() + "-" + deviceID;
 
-                while (conn.Table<T>().Any(m => m.TransactionID == transactionID))
+                while (conn.Table<SQLiteTransactionsModel>().Any(m => m.TransactionID == transactionID))
                 {
-                    transactionID = Guid.NewGuid().ToString();
+                    transactionID = Guid.NewGuid().ToString() + "-" + deviceID;
                 }
+
+                conn.Insert(new SQLiteTransactionsModel
+                {
+                    TransactionID = transactionID,
+                    CreatedAt = DateTime.Now.ToString()
+                });
 
                 foreach (var item in clientList)
                 {
-                    string versionID = Guid.NewGuid().ToString();
-
-                    while (conn.Table<T>().Any(m => m.VersionID == versionID))
+                    // Version ID is already set using trigger
+                    // Double checking if the version ID is null for any unknown scenario
+                    if (item.VersionID == null)
                     {
-                        versionID = Guid.NewGuid().ToString();
+                        string versionID = Guid.NewGuid().ToString() + "-" + deviceID;
+
+                        while (conn.Table<T>().Any(m => m.VersionID == versionID))
+                        {
+                            item.VersionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                        }
                     }
 
-                    item.VersionID = item.VersionID == null ? versionID : item.VersionID;
                     item.IsSynced = false;
-                    item.TransactionID = item.TransactionID == null ? transactionID : item.TransactionID;
+
+                    if (item.TransactionID == null)
+                    {
+                        item.TransactionID = transactionID;
+                    }
 
                     conn.Update(item);
                 }
@@ -286,10 +274,10 @@ namespace OfflineSync.Client.DB
 
                 if (rec != null)
                 {
-                    if (rec.ClientTableName != model.ClientTableName)
-                    {
-                        throw new Exception(StringUtility.CannotRenameTable);
-                    }
+                    //if (rec.ClientTableName != model.ClientTableName)
+                    //{
+                    //    throw new Exception(StringUtility.CannotRenameTable);
+                    //}
 
                     conn.Update(model);
                 }
@@ -363,5 +351,33 @@ namespace OfflineSync.Client.DB
                 }
             }
         }
+
+        public void UpdateConflictedVersionIDs<T>(IEnumerable<FailedRecordsModel> conflictRecs, string deviceID)
+        where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                foreach (var rec in conflictRecs)
+                {
+                    var list = conn.Table<T>().ToList().Where(m => m.VersionID == rec.VersionID).ToList();
+
+                    string versionID = Guid.NewGuid().ToString() + "-" + deviceID;
+
+                    while (conn.Table<T>().Any(m => m.VersionID == versionID))
+                    {
+                        versionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                    }
+
+                    foreach (var item in list)
+                    {
+                        item.VersionID = versionID;
+                        item.IsSynced = false;
+                    }
+
+                    conn.UpdateAll(list);
+                }
+            }
+        }
+
     }
 }

@@ -35,7 +35,7 @@ namespace OfflineSync.Server.Controllers
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, CreateExceptionMessage(ex));
             }
         }
 
@@ -69,7 +69,7 @@ namespace OfflineSync.Server.Controllers
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, CreateExceptionMessage(ex));
             }
         }
 
@@ -82,15 +82,15 @@ namespace OfflineSync.Server.Controllers
 
                 InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
 
-                return Request.CreateResponse(HttpStatusCode.OK);
+                return Request.CreateResponse(HttpStatusCode.OK, model);
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, CreateExceptionMessage(ex));
             }
         }
 
-        public object InvokeDBMethod(string serverTableName, string serverAssemblyName,
+        internal object InvokeDBMethod(string serverTableName, string serverAssemblyName,
             string methodName, object param)
         {
             Assembly assembly = Assembly.Load(serverAssemblyName);
@@ -127,6 +127,18 @@ namespace OfflineSync.Server.Controllers
             }
 
             return result;
+        }
+
+        internal string CreateExceptionMessage(Exception ex)
+        {
+            try
+            {
+                return ex.Message + ex.InnerException != null ? ex.InnerException.Message : string.Empty;
+            }
+            catch
+            {
+                return ex.Message;
+            }
         }
     }
 }

@@ -18,12 +18,6 @@ namespace User.FormsApp
         {
             InitializeComponent();
         }
-
-        private void HomeForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         #region Client
 
         private void btnAddGlobalConfig_Click(object sender, EventArgs e)
@@ -165,8 +159,8 @@ namespace User.FormsApp
                        ControllerRoute = "Home/GetData",
                        SyncType = SyncType.SyncTwoWay,
                        ServerAssemblyName = "User.APIApp",
-                       ServerTableName = "tblTestATWS",
-                       ControllerData = "tblTestSTC"
+                       ServerTableName = "tblTestTWS",
+                       ControllerData = "tblTestTWS"
                    }
                );
 

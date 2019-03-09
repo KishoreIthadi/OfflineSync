@@ -168,7 +168,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public void InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel
+        public APIModel InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel
         {
             List<T> list = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
 
@@ -194,48 +194,62 @@ namespace OfflineSync.Server.DB
                     {
                         // TransactionID with DeviceID already exists
                         // Dublicate transactionID error
-                        model.FailedTransactionIDs[0] = transactionID;
+                        model.FailedTransactionIDs.Add(transactionID);
                     }
+                }
+
+                if(model.FailedTransactionIDs.Count() > 0)
+                {
+                    return model;
                 }
 
                 foreach (var item in list)
                 {
-                    try
+                    var updatedItem = db.dbSet.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
+
+                    if (updatedItem != null)
                     {
-                        var updatedItem = db.dbSet.Where(m => m.VersionID == item.VersionID).FirstOrDefault();
-
-                        if (updatedItem != null)
+                        if (DateTime.Compare(updatedItem.SyncCreatedAt.Value, item.SyncCreatedAt.Value) != 0)
                         {
-                            var adapter = (IObjectContextAdapter)db;
-                            var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
-                                            .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
-
-                            // Need to get the list of autoincrement columns
-
-                            var itemJson = JsonConvert.SerializeObject(item);
-                            var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
-
-                            var updatedItemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(updatedItem));
-
-                            foreach (var keyname in keyNames)
+                            model.FailedSyncRecords.Add(new FailedRecordsModel
                             {
-                                itemDict[keyname] = updatedItemDict[keyname];
-                            }
+                                VersionID = item.VersionID,
+                                IsConflicted = true
+                            });
 
-                            var finalJson = JsonConvert.SerializeObject(itemDict);
-                            var finalRec = JsonConvert.DeserializeObject<T>(finalJson);
-
-                            db.Entry(updatedItem).CurrentValues.SetValues(finalRec);
+                            continue;
                         }
-                        else
+
+                        var adapter = (IObjectContextAdapter)db;
+                        var keyNames = adapter.ObjectContext.CreateObjectSet<T>()
+                                        .EntitySet.ElementType.KeyMembers.Select(m => m.Name);
+
+                        // Need to get the list of autoincrement columns
+
+                        var itemJson = JsonConvert.SerializeObject(item);
+                        var itemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(itemJson);
+
+                        var updatedItemDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(JsonConvert.SerializeObject(updatedItem));
+
+                        foreach (var keyname in keyNames)
                         {
-                            db.dbSet.Add(item);
+                            itemDict[keyname] = updatedItemDict[keyname];
                         }
+
+                        var finalJson = JsonConvert.SerializeObject(itemDict);
+                        var finalRec = JsonConvert.DeserializeObject<T>(finalJson);
+
+                        db.Entry(updatedItem).CurrentValues.SetValues(finalRec);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // need to write logic for capturing dublicate versionid
+                        db.dbSet.Add(item);
                     }
+                }
+
+                if (model.FailedSyncRecords.Count > 0)
+                {
+                    return model;
                 }
 
                 db.SaveChanges();
@@ -246,6 +260,8 @@ namespace OfflineSync.Server.DB
                     transc.Status = true;
                     DB.SaveChanges();
                 }
+
+                return model;
             }
         }
 
@@ -253,8 +269,6 @@ namespace OfflineSync.Server.DB
         {
             using (SQLContext<tblSyncDevice> db = new SQLContext<tblSyncDevice>())
             {
-
-
                 string newID = Guid.NewGuid().ToString();
 
                 while (db.Set<tblSyncDevice>().Any(m => m.DeviceID == newID))

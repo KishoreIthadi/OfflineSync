@@ -412,7 +412,6 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "HomeForm";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.HomeForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvRecords)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvServerRecords)).EndInit();
             this.ResumeLayout(false);

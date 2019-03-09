@@ -22,19 +22,19 @@ namespace OfflineSync.Client.Utilities
 
         public void InitializeDeviceID()
         {
-           Task.Run(GetDeviceID).Wait();
+            Task.Run(GetDeviceID).Wait();
         }
 
         internal async Task<string> GetDeviceID()
         {
-            SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
-
             // Checking if deviceID exists
-            string deviceID = _dBOperations.GetConfigurationsByKey("DeviceID");
+            string deviceID = _dBOperations.GetConfigurationByKey("DeviceID");
 
+            // Get DeviceID from API
             if (deviceID == null)
             {
-                // Get DeviceID from API
+                SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
+
                 deviceID = await syncAPI.Get<string>(StringUtility.DeviceIDAPICall);
 
                 // saving the device id to configuration table

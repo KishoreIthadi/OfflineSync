@@ -15,7 +15,7 @@ namespace OfflineSync.Server.DB
 
         void UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
-        void InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel;
+        APIModel InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
         string GetDeviceID();
     }
