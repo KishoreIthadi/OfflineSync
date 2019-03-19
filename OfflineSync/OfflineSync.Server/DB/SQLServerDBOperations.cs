@@ -200,18 +200,22 @@ namespace OfflineSync.Server.DB
                            {
                                DeviceID = model.DeviceID,
                                TransactionID = transactionID,
-                               Status = false,
-                               CreatedAt = DateTime.Now.ToString()
+                               Status = false
                            }
                         );
                         DB.SaveChanges();
                     }
-                   /* else
-                    {
-                        // TransactionID with DeviceID already exists
-                        // Dublicate transactionID error
-                        model.FailedTransactionIDs.Add(transactionID);
-                    }*/
+                    /* FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
+                       Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
+                       Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
+                       DomainModel.Models.APIModel 
+                    */
+                    /* else
+                     {
+                         // TransactionID with DeviceID already exists
+                         // Dublicate transactionID error
+                         model.FailedTransactionIDs.Add(transactionID);
+                     }*/
                 }
 
                 /*if(model.FailedTransactionIDs.Count() > 0)

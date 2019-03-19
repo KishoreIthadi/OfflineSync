@@ -1,4 +1,5 @@
 ﻿using System;
+
 namespace OfflineSync.Server.Models.BaseModels
 {
     internal interface IBaseSyncTransaction
@@ -6,7 +7,7 @@ namespace OfflineSync.Server.Models.BaseModels
         string TransactionID { get; set; }
         string DeviceID { get; set; }
         bool Status { get; set; }
-        DateTime CreatedAt { get; set; }
+        DateTime? CreatedAt { get; set; }
 
         IBaseSyncDevice tblSyncDevice { get; set; }
     }

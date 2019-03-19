@@ -18,7 +18,7 @@ namespace OfflineSync.Client.DB
         public SQLiteDBOperations()
         {
             _DBPath = SyncGlobalConfig.DBPath;
-
+           
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 conn.CreateTable<SQLiteConfigurationsModel>();
@@ -55,32 +55,40 @@ namespace OfflineSync.Client.DB
                 return null;
             }
         }
+       
+        /* FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
+            Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
+            Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
+            DomainModel.Models.APIModel
+        */
+        /*public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, APIModel model) where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                List<T> data = null;
+                foreach (var id in failedTransactionIDs)
+                {
+                    var list = conn.Table<T>().ToList().Where(m => m.TransactionID == id).ToList();
 
-        /* public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, string deviceID) where T : ISyncClientBaseModel, new()
-         {
-             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-             {
-                 foreach (var id in failedTransactionIDs)
-                 {
-                     var list = conn.Table<T>().ToList().Where(m => m.TransactionID == id).ToList();
+                    string newID = Guid.NewGuid().ToString() + "-" + model.DeviceID + "-" + DateTime.Now.Ticks;
 
-                     string newID = Guid.NewGuid().ToString() + "-" + deviceID; ;
+                    while (conn.Table<T>().Any(m => m.TransactionID == newID))
+                    {
+                        newID = Guid.NewGuid().ToString() + "-" + model.DeviceID + "-" + DateTime.Now.Ticks; ;
+                    }
 
-                     while (conn.Table<T>().Any(m => m.TransactionID == newID))
-                     {
-                         newID = Guid.NewGuid().ToString() + "-" + deviceID;
-                     }
-
-                     foreach (var item in list)
-                     {
-                         item.TransactionID = newID;
-                         item.IsSynced = false; // Added this line to make it through pass in startsyncasync 2nd call
-                     }
-
-                     conn.UpdateAll(list);
-                 }
-             }
-         }*/
+                    foreach (var item in list)
+                    {
+                        item.TransactionID = newID;
+                        item.IsSynced = false; 
+                    }
+                    data = (List<T>)model.Data;
+                    data.Where(m => m.TransactionID == id).First().TransactionID = newID;
+                    conn.UpdateAll(list);
+                }
+                model.Data = data;
+            }
+        }*/
 
         public void InsertConfigurationsModel(string key, string value)
         {
@@ -129,13 +137,9 @@ namespace OfflineSync.Client.DB
 
         public void InsertList<T>(IEnumerable<T> list) where T : ISyncClientBaseModel, new()
         {
-            /* foreach (var item in list)
-             {
-                 item.IsSynced = true;
-             }*/
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                list = list.Select(m => { m.IsSynced = true; return m; });
+                //list = list.Select(m => { m.IsSynced = true; return m; });
                 conn.InsertAll(list);
             }
         }
@@ -170,10 +174,10 @@ namespace OfflineSync.Client.DB
                                 {
                                     UpdateItemDict[key] = Convert.ToDateTime(itemDict[key].ToString().ToLower().Replace("t", " ")).ToString("yyyy-MM-dd hh:mm:ss");
                                 }
-                                else if (key == "IsSynced")
+                                /*else if(key == "IsSynced")
                                 {
                                     UpdateItemDict[key] = true;
-                                }
+                                }*/
                                 else
                                 {
                                     UpdateItemDict[key] = itemDict[key];
@@ -267,12 +271,12 @@ namespace OfflineSync.Client.DB
                     if (item.TransactionID == null)
                     {
                         item.TransactionID = transactionID;
-                    }
+                    }                    
                     conn.Update(item);
                 }
 
-            }
-
+            }          
+            
         }
 
         public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model)
@@ -368,7 +372,6 @@ namespace OfflineSync.Client.DB
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 List<T> data = null;
-
                 foreach (var rec in conflictRecs)
                 {
                     T dbRec = conn.Table<T>().Where(m => m.VersionID == rec.VersionID).FirstOrDefault();
@@ -389,7 +392,6 @@ namespace OfflineSync.Client.DB
 
                     conn.Update(dbRec);
                 }
-
                 model.Data = data;
             }
         }
