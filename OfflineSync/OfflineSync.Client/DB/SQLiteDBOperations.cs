@@ -15,7 +15,6 @@ namespace OfflineSync.Client.DB
     internal class SQLiteDBOperations : IDBOperations
     {
         public string _DBPath;
-
         public SQLiteDBOperations()
         {
             _DBPath = SyncGlobalConfig.DBPath;
@@ -57,30 +56,31 @@ namespace OfflineSync.Client.DB
             }
         }
 
-        public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, string deviceID) where T : ISyncClientBaseModel, new()
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
-            {
-                foreach (var id in failedTransactionIDs)
-                {
-                    var list = conn.Table<T>().ToList().Where(m => m.TransactionID == id).ToList();
+        /* public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, string deviceID) where T : ISyncClientBaseModel, new()
+         {
+             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+             {
+                 foreach (var id in failedTransactionIDs)
+                 {
+                     var list = conn.Table<T>().ToList().Where(m => m.TransactionID == id).ToList();
 
-                    string newID = Guid.NewGuid().ToString() + "-" + deviceID; ;
+                     string newID = Guid.NewGuid().ToString() + "-" + deviceID; ;
 
-                    while (conn.Table<T>().Any(m => m.TransactionID == newID))
-                    {
-                        newID = Guid.NewGuid().ToString() + "-" + deviceID;
-                    }
+                     while (conn.Table<T>().Any(m => m.TransactionID == newID))
+                     {
+                         newID = Guid.NewGuid().ToString() + "-" + deviceID;
+                     }
 
-                    foreach (var item in list)
-                    {
-                        item.TransactionID = newID;
-                    }
+                     foreach (var item in list)
+                     {
+                         item.TransactionID = newID;
+                         item.IsSynced = false; // Added this line to make it through pass in startsyncasync 2nd call
+                     }
 
-                    conn.UpdateAll(list);
-                }
-            }
-        }
+                     conn.UpdateAll(list);
+                 }
+             }
+         }*/
 
         public void InsertConfigurationsModel(string key, string value)
         {
@@ -129,8 +129,13 @@ namespace OfflineSync.Client.DB
 
         public void InsertList<T>(IEnumerable<T> list) where T : ISyncClientBaseModel, new()
         {
+            /* foreach (var item in list)
+             {
+                 item.IsSynced = true;
+             }*/
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
+                list = list.Select(m => { m.IsSynced = true; return m; });
                 conn.InsertAll(list);
             }
         }
@@ -164,6 +169,10 @@ namespace OfflineSync.Client.DB
                                 if (key == "SyncCreatedAt" || key == "SyncModifiedAt")
                                 {
                                     UpdateItemDict[key] = Convert.ToDateTime(itemDict[key].ToString().ToLower().Replace("t", " ")).ToString("yyyy-MM-dd hh:mm:ss");
+                                }
+                                else if (key == "IsSynced")
+                                {
+                                    UpdateItemDict[key] = true;
                                 }
                                 else
                                 {
@@ -226,11 +235,11 @@ namespace OfflineSync.Client.DB
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
-                string transactionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                string transactionID = Guid.NewGuid().ToString() + "-" + deviceID + "-" + DateTime.Now.Ticks;
 
                 while (conn.Table<SQLiteTransactionsModel>().Any(m => m.TransactionID == transactionID))
                 {
-                    transactionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                    transactionID = Guid.NewGuid().ToString() + "-" + deviceID + "-" + DateTime.Now.Ticks;
                 }
 
                 conn.Insert(new SQLiteTransactionsModel
@@ -259,10 +268,11 @@ namespace OfflineSync.Client.DB
                     {
                         item.TransactionID = transactionID;
                     }
-
                     conn.Update(item);
                 }
+
             }
+
         }
 
         public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model)
@@ -352,32 +362,36 @@ namespace OfflineSync.Client.DB
             }
         }
 
-        public void UpdateConflictedVersionIDs<T>(IEnumerable<FailedRecordsModel> conflictRecs, string deviceID)
+        public void UpdateConflictedVersionIDs<T>(IEnumerable<FailedRecordsModel> conflictRecs, APIModel model)
         where T : ISyncClientBaseModel, new()
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
+                List<T> data = null;
+
                 foreach (var rec in conflictRecs)
                 {
-                    var list = conn.Table<T>().ToList().Where(m => m.VersionID == rec.VersionID).ToList();
+                    T dbRec = conn.Table<T>().Where(m => m.VersionID == rec.VersionID).FirstOrDefault();
 
-                    string versionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                    string versionID = Guid.NewGuid().ToString() + "-" + model.DeviceID;
 
                     while (conn.Table<T>().Any(m => m.VersionID == versionID))
                     {
-                        versionID = Guid.NewGuid().ToString() + "-" + deviceID;
+                        versionID = Guid.NewGuid().ToString() + "-" + model.DeviceID;
                     }
 
-                    foreach (var item in list)
-                    {
-                        item.VersionID = versionID;
-                        item.IsSynced = false;
-                    }
+                    dbRec.VersionID = versionID;
+                    dbRec.IsSynced = false;
 
-                    conn.UpdateAll(list);
+                    data = (List<T>)model.Data;
+
+                    data.Where(m => m.VersionID == rec.VersionID).First().VersionID = versionID;
+
+                    conn.Update(dbRec);
                 }
+
+                model.Data = data;
             }
         }
-
     }
 }

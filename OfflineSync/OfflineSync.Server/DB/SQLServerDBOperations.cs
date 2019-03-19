@@ -37,7 +37,7 @@ namespace OfflineSync.Server.DB
                 {
                     if (!db.dbSet.Any(m => m.TransactionID == id && m.DeviceID == deviceID))
                     {
-                        db.dbSet.Add(new tblSyncTransaction { Status = false, DeviceID = deviceID, TransactionID = id });
+                        db.dbSet.Add(new tblSyncTransaction { Status = false, DeviceID = deviceID, TransactionID = id});
                         failedTransactionList.Add(id);
                     }
                     else if (db.dbSet.Any(m => m.TransactionID == id && m.DeviceID == deviceID && m.Status == false))
@@ -78,7 +78,7 @@ namespace OfflineSync.Server.DB
             }
         }
 
-        public void UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel
+        public APIModel UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel
         {
             List<T> list = JsonConvert.DeserializeObject<List<T>>(model.FailedTrasationData.ToString());
 
@@ -97,7 +97,7 @@ namespace OfflineSync.Server.DB
 
             if (failedTransactionIDs == null)
             {
-                return;
+                return model;
             }
 
             List<T> failedRecords = new List<T>();
@@ -121,6 +121,17 @@ namespace OfflineSync.Server.DB
 
                     if (updatedItem != null)
                     {
+                        if (DateTime.Compare(updatedItem.SyncCreatedAt.Value, item.SyncCreatedAt.Value) != 0)
+                        {
+                            model.FailedSyncRecords.Add(new FailedRecordsModel
+                            {
+                                VersionID = item.VersionID,
+                                IsConflicted = true
+                            });
+
+                            continue;
+                        }
+
                         var adapter = (IObjectContextAdapter)db;
 
                         // gets primary key column names
@@ -152,7 +163,10 @@ namespace OfflineSync.Server.DB
                         db.dbSet.Add(item);
                     }
                 }
-
+                if (model.FailedSyncRecords.Count > 0)
+                {
+                    return model;
+                }
                 using (SQLContext<tblSyncTransaction> DB = new SQLContext<tblSyncTransaction>())
                 {
                     foreach (var item in failedTransactionIDs)
@@ -166,6 +180,7 @@ namespace OfflineSync.Server.DB
 
                 db.SaveChanges();
             }
+                return model;
         }
 
         public APIModel InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel
@@ -185,23 +200,24 @@ namespace OfflineSync.Server.DB
                            {
                                DeviceID = model.DeviceID,
                                TransactionID = transactionID,
-                               Status = false
+                               Status = false,
+                               CreatedAt = DateTime.Now.ToString()
                            }
                         );
                         DB.SaveChanges();
                     }
-                    else
+                   /* else
                     {
                         // TransactionID with DeviceID already exists
                         // Dublicate transactionID error
                         model.FailedTransactionIDs.Add(transactionID);
-                    }
+                    }*/
                 }
 
-                if(model.FailedTransactionIDs.Count() > 0)
+                /*if(model.FailedTransactionIDs.Count() > 0)
                 {
                     return model;
-                }
+                }*/
 
                 foreach (var item in list)
                 {

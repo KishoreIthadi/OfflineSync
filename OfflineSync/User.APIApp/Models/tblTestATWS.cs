@@ -10,7 +10,10 @@ namespace User.APIApp
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        public string Name { get; set; }
+        public string StringType { get; set; }
+        public int IntType { get; set; }
+        public double FloatType { get; set; }
+        public DateTime? DateType { get; set; }
         public string VersionID { get; set; }
         public string TransactionID { get; set; }
         public DateTime? SyncCreatedAt { get; set; }
