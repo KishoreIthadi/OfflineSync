@@ -13,7 +13,7 @@ namespace OfflineSync.Server.DB
 
         List<T> GetDataByLastSyncDate<T>(DateTime dt) where T : class, ISQLSyncServerModel;
 
-        void UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel;
+        APIModel UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
         APIModel InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
