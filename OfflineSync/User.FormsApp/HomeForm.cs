@@ -98,7 +98,7 @@ namespace User.FormsApp
                         ServerAssemblyName = "User.APIApp",
                         ServerTableName = "tblTestACTS"
                     }
-                );
+                    );
 
                 syncSettings.Add(
                     new SQLiteSyncSettingsModel
@@ -110,7 +110,7 @@ namespace User.FormsApp
                         ServerAssemblyName = "User.APIApp",
                         ServerTableName = "tblTestACTSH"
                     }
-                );
+                    );
 
                 syncSettings.Add(
                     new SQLiteSyncSettingsModel
@@ -136,8 +136,6 @@ namespace User.FormsApp
                    }
                );
 
-                // Autosync is false
-                // Sync type is client to server
                 syncSettings.Add(
                     new SQLiteSyncSettingsModel
                     {
@@ -151,18 +149,18 @@ namespace User.FormsApp
                 );
 
                 syncSettings.Add(
-                   new SQLiteSyncSettingsModel
-                   {
-                       AutoSync = false,
-                       ClientTableName = typeof(tblTestTWS).Name,
-                       Priority = OveridePriority.LastUpdated,
-                       ControllerRoute = "Home/GetData",
-                       SyncType = SyncType.SyncTwoWay,
-                       ServerAssemblyName = "User.APIApp",
-                       ServerTableName = "tblTestTWS",
-                       ControllerData = "tblTestTWS"
-                   }
-               );
+                    new SQLiteSyncSettingsModel
+                    {
+                        AutoSync = false,
+                        ClientTableName = typeof(tblTestTWS).Name,
+                        Priority = OveridePriority.LastUpdated,
+                        ControllerRoute = "Home/GetData",
+                        SyncType = SyncType.SyncTwoWay,
+                        ServerAssemblyName = "User.APIApp",
+                        ServerTableName = "tblTestTWS",
+                        ControllerData = "tblTestTWS"
+                    }
+              );
 
                 lblClientVal.Text = "Settings Added Sucessfully";
             }
@@ -201,37 +199,55 @@ namespace User.FormsApp
                         case "tblTestACTS":
                             conn.Insert(new tblTestACTS()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                         case "tblTestACTSH":
                             conn.Insert(new tblTestACTSH()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                         case "tblTestASTC":
                             conn.Insert(new tblTestASTC()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                         case "tblTestATWS":
                             conn.Insert(new tblTestATWS()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                         case "tblTestSTC":
                             conn.Insert(new tblTestSTC()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                         case "tblTestTWS":
                             conn.Insert(new tblTestTWS()
                             {
-                                Name = txtClientName.Text
+                                StringType = txtClientName.Text,
+                                IntType = Convert.ToInt32(textBox1.Text),
+                                FloatType = Convert.ToDouble(textBox2.Text),
+                                DateType = dateTimePicker1.Value
                             });
                             break;
                     }
@@ -265,27 +281,45 @@ namespace User.FormsApp
                     {
                         case "tblTestACTS":
                             rec = conn.Table<tblTestACTS>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                         case "tblTestACTSH":
                             rec = conn.Table<tblTestACTSH>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                         case "tblTestASTC":
                             rec = conn.Table<tblTestASTC>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                         case "tblTestATWS":
                             rec = conn.Table<tblTestATWS>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                         case "tblTestSTC":
                             rec = conn.Table<tblTestSTC>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                         case "tblTestTWS":
                             rec = conn.Table<tblTestTWS>().ToList().Where(m => m.ID == Convert.ToInt16(txtClientID.Text)).FirstOrDefault();
-                            rec.Name = txtClientName.Text;
+                            rec.StringType = txtClientName.Text;
+                            rec.IntType = Convert.ToInt32(textBox1.Text);
+                            rec.FloatType = Convert.ToDouble(textBox2.Text);
+                            rec.DateType = dateTimePicker1.Value;
                             break;
                     }
 
@@ -310,7 +344,7 @@ namespace User.FormsApp
             }
         }
 
-        private void btnClientSync_Click(object sender, EventArgs e)
+        private void btnClientSync_ClickAsync(object sender, EventArgs e)
         {
             try
             {
@@ -337,7 +371,6 @@ namespace User.FormsApp
                         new SyncUtility<tblTestTWS>().StartSyncAsync();
                         break;
                 }
-
                 lblClientVal.Text = "Sync Sucessfully";
 
                 UpdateLastSyncDateTime();
@@ -359,7 +392,7 @@ namespace User.FormsApp
                     DataGridViewRow selectedRow = dgvRecords.Rows[e.RowIndex];
 
                     txtClientID.Text = selectedRow.Cells["ID"].Value.ToString();
-                    txtClientName.Text = selectedRow.Cells["Name"].Value.ToString();
+                    txtClientName.Text = selectedRow.Cells["StringType"].Value.ToString();
 
                     btnClientUpdate.Enabled = true;
                     btnClientAdd.Enabled = false;
@@ -467,7 +500,9 @@ namespace User.FormsApp
             txtClientID.Text = string.Empty;
             btnClientAdd.Enabled = true;
             btnClientUpdate.Enabled = false;
-
+            textBox1.Text = string.Empty;
+            textBox2.Text = string.Empty;
+            dateTimePicker1.Text = string.Empty;
             lblClientErrorVal.Text = string.Empty;
             lblClientVal.Text = string.Empty;
         }
@@ -477,7 +512,7 @@ namespace User.FormsApp
 
         #region Server
 
-        const string _connString = "Server=.;User ID=sa;Password=Welcome@1234;DataBase=SyncDB;";
+        const string _connString = "Server=.;User ID=sa;Password=Welcome@1234;DataBase=SyncDB";
 
         private void btnServerAdd_Click(object sender, EventArgs e)
         {
@@ -488,32 +523,35 @@ namespace User.FormsApp
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     string query = string.Empty;
-
+                    string serverStringType = txtServerName.Text;
+                    string serverIntType = textBox3.Text;
+                    string serverFloatType = textBox4.Text;
+                    string serverDateType = dateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm:ss");
                     switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
-                            query = "INSERT INTO [dbo].[tblTestACTS]([Name]) VALUES ('"
-                                + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestACTS]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                                + serverStringType + "',"+ serverIntType + ","+serverFloatType+ ",'"+ serverDateType + "')";
                             break;
                         case "tblTestACTSH":
-                            query = "INSERT INTO [dbo].[tblTestACTSH]([Name]) VALUES ('"
-                                + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestACTSH]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                               + serverStringType + "'," + serverIntType + "," + serverFloatType + ",'" + serverDateType + "')";
                             break;
                         case "tblTestASTC":
-                            query = "INSERT INTO [dbo].[tblTestASTC]([Name]) VALUES ('"
-                                + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestASTC]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                                + serverStringType + "'," + serverIntType + "," + serverFloatType + ",'" + serverDateType + "')";
                             break;
                         case "tblTestATWS":
-                            query = "INSERT INTO [dbo].[tblTestATWS]([Name]) VALUES ('"
-                                + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestATWS]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                               + serverStringType + "'," + serverIntType + "," + serverFloatType + ",'" + serverDateType + "')";
                             break;
                         case "tblTestSTC":
-                            query = "INSERT INTO [dbo].[tblTestSTC]([Name]) VALUES ('"
-                               + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestSTC]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                             + serverStringType + "'," + serverIntType + "," + serverFloatType + ",'" + serverDateType + "')";
                             break;
                         case "tblTestTWS":
-                            query = "INSERT INTO [dbo].[tblTestTWS]([Name]) VALUES ('"
-                                + txtServerName.Text + "')";
+                            query = "INSERT INTO [dbo].[tblTestTWS]([StringType],[IntType],[FloatType],[DateType]) VALUES ('"
+                               + serverStringType + "'," + serverIntType + "," + serverFloatType + ",'" + serverDateType + "')";
                             break;
                     }
 
@@ -543,31 +581,34 @@ namespace User.FormsApp
                 using (SqlConnection conn = new SqlConnection(_connString))
                 {
                     string query = string.Empty;
-
+                    string serverStringType = txtServerName.Text;
+                    string serverIntType = textBox3.Text;
+                    string serverFloatType = textBox4.Text;
+                    string serverDateType = dateTimePicker2.Value.ToString("yyyy-MM-dd HH:mm:ss");
                     switch (cbServerTableType.SelectedItem)
                     {
                         case "tblTestACTS":
-                            query = "UPDATE [dbo].[tblTestACTS] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestACTS] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType+ ",[FloatType]=" + serverFloatType+ ",[DateType]='"+ serverDateType+"' "+
                                      "WHERE ID=" + txtServerID.Text + ";";
                             break;
                         case "tblTestACTSH":
-                            query = "UPDATE [dbo].[tblTestACTSH] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestACTSH] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType + ",[FloatType]=" + serverFloatType + ",[DateType]='" + serverDateType + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestASTC":
-                            query = "UPDATE [dbo].[tblTestASTC] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestASTC] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType + ",[FloatType]=" + serverFloatType + ",[DateType]='" + serverDateType + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestATWS":
-                            query = "UPDATE [dbo].[tblTestATWS] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestATWS] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType + ",[FloatType]=" + serverFloatType + ",[DateType]='" + serverDateType + "' " +
                                       "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestSTC":
-                            query = "UPDATE [dbo].[tblTestSTC] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestSTC] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType + ",[FloatType]=" + serverFloatType + ",[DateType]='" + serverDateType + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                         case "tblTestTWS":
-                            query = "UPDATE [dbo].[tblTestTWS] SET [Name] = '" + txtServerName.Text + "' " +
+                            query = "UPDATE [dbo].[tblTestTWS] SET [StringType] = '" + serverStringType + "',[IntType]=" + serverIntType + ",[FloatType]=" + serverFloatType + ",[DateType]='" + serverDateType + "' " +
                                      "WHERE ID = " + txtServerID.Text + ";";
                             break;
                     }
@@ -590,7 +631,7 @@ namespace User.FormsApp
             }
             catch (Exception ex)
             {
-                lblClientErrorVal.Text = ex.Message;
+                lblServerErrorVal.Text = ex.Message;
             }
         }
 
@@ -619,32 +660,38 @@ namespace User.FormsApp
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = conn;
                     cmd.CommandText = "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestACTS' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestACTS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestACTS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,"+
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[DateType] [datetime] NULL,"+
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestACTSH' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestACTSH]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestACTSH]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL," +
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[DateType] [datetime] NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestASTC' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestASTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestASTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL," +
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[DateType] [datetime] NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestATWS' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestATWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestATWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL," +
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[DateType] [datetime] NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestSTC' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestSTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestSTC]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL," +
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[DateType] [datetime] NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) " +
 
                                       "IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tblTestTWS' AND xtype='U')" +
-                                      "CREATE TABLE [dbo].[tblTestTWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,[Name] [nvarchar](max) NULL," +
+                                      "CREATE TABLE [dbo].[tblTestTWS]([ID] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL," +
+                                      "[StringType] [nvarchar](max) NULL, [IntType] [int] NULL,[FloatType] [float] NULL,[dateType] [datetime] NULL," +
                                       "[VersionID][nvarchar](max) NULL,[TransactionID] [nvarchar] (max) NULL," +
                                       "[SyncCreatedAt] [datetime] NULL,[SyncModifiedAt] [datetime] NULL) ";
 
@@ -733,7 +780,7 @@ namespace User.FormsApp
                     DataGridViewRow selectedRow = dgvServerRecords.Rows[e.RowIndex];
 
                     txtServerID.Text = selectedRow.Cells["ID"].Value.ToString();
-                    txtServerName.Text = selectedRow.Cells["Name"].Value.ToString();
+                    txtServerName.Text = selectedRow.Cells["StringType"].Value.ToString();
 
                     btnServerUpdate.Enabled = true;
                     btnServerAdd.Enabled = false;
@@ -749,13 +796,95 @@ namespace User.FormsApp
         {
             txtServerName.Text = string.Empty;
             txtServerID.Text = string.Empty;
+            textBox3.Text = string.Empty;
+            textBox4.Text = string.Empty;
+            dateTimePicker2.Text = string.Empty;
             btnServerAdd.Enabled = true;
             btnServerUpdate.Enabled = false;
-
             lblServerErrorVal.Text = string.Empty;
             lblServerVal.Text = string.Empty;
         }
 
         #endregion Server
+
+        private void HomeForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblClientLastSyncDateTime_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblDeviceID_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtClientName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtServerName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblClientVal_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

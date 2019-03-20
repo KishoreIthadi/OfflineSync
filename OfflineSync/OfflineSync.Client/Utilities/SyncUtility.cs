@@ -43,10 +43,10 @@ namespace OfflineSync.Client.Utilities
                 else if (settingslist.Count > 1)
                 {
                     throw new Exception(StringUtility.DulplicateSettings);
-                }
+                }             
                 else
                 {
-                    ISyncSettingsBaseModel settings = settingslist[0];
+                    ISyncSettingsBaseModel settings = settingslist[0];                    
 
                     APIModel model = await GetAPIModel(settings);
 
@@ -272,11 +272,17 @@ namespace OfflineSync.Client.Utilities
                 res = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.GetData);
             }
 
+            /* 
+              FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
+              Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
+              Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
+              DomainModel.Models.APIModel 
+            */
             /* if (res.FailedTransactionIDs.Count > 0)
-             {
-                 // Updating existing TransactionID since it already exist in server DB
-                 _dBOperations.UpdateConflictedTransationIDs<T>(res.FailedTransactionIDs, model.DeviceID);
-             }*/
+            {
+                // Updating existing TransactionID since it already exist in server DB
+                _dBOperations.UpdateConflictedTransationIDs<T>(res.FailedTransactionIDs, model.DeviceID);
+            }*/
 
             if (res.FailedSyncRecords.Count > 0)
             {
@@ -300,8 +306,11 @@ namespace OfflineSync.Client.Utilities
                     }
                 }
             }
-
-            if (res.FailedSyncRecords.Count > 0) //|| res.FailedTransactionIDs.Count > 0)
+            /* FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
+            Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
+            Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
+            DomainModel.Models.APIModel */
+            if (res.FailedSyncRecords.Count > 0)//|| res.FailedTransactionIDs.Count > 0)
             {
                 model.FailedSyncRecords.Clear();
                 //model.FailedTransactionIDs.Clear();
@@ -323,21 +332,26 @@ namespace OfflineSync.Client.Utilities
             return res;
         }
 
-        internal async Task PostDataAsync(APIModel model, ISyncSettingsBaseModel settings, bool isTransationIDSet)
+        internal async Task PostDataAsync(APIModel model, ISyncSettingsBaseModel settings, bool isTransactionIDSet)
         {
             List<T> clientList = (List<T>)model.Data;
 
-            if (isTransationIDSet)
+            if(isTransactionIDSet)
             {
                 _dBOperations.SetTransationIDs(clientList, model.DeviceID);
             }
-
+          
             //TODO Pagination
             SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
 
             var data = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.PostData);
-
-            if (data.FailedSyncRecords.Count > 0)// || data.FailedTransactionIDs.Count > 0)
+            /* 
+              FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
+              Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
+              Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
+              DomainModel.Models.APIModel
+            */
+            if (data.FailedSyncRecords.Count > 0)//|| data.FailedTransactionIDs.Count> 0)
             {
                 await FailedTransactionsSync(data, settings, false);
             }

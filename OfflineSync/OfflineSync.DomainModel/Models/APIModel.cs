@@ -9,7 +9,7 @@ namespace OfflineSync.DomainModel.Models
         public APIModel()
         {
             FailedSyncRecords = new List<FailedRecordsModel>();
-           //FailedTransactionIDs = new List<string>();
+            //FailedTransactionIDs = new List<string>();
         }
 
         public object FailedTrasationData { get; set; }
