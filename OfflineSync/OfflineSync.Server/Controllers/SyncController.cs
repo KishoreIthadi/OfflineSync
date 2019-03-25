@@ -26,6 +26,8 @@ namespace OfflineSync.Server.Controllers
             }
         }
 
+        #region HTTPCall
+
         [HttpGet]
         public HttpResponseMessage GetDeviceID()
         {
@@ -44,26 +46,7 @@ namespace OfflineSync.Server.Controllers
         {
             try
             {
-                if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)
-                {
-                    InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
-                              "UpdateFailedTransactions", model);
-                }
-
-                if (model.AutoSync &&
-                   (model.SyncType == SyncType.SyncTwoWay ||
-                    model.SyncType == SyncType.SyncServerToClient))
-                {
-                    if (model.LastSyncDate == null || model.LastSyncDate == DateTime.MinValue)
-                    {
-                        model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "GetData", null);
-                    }
-                    else
-                    {
-                        model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
-                            "GetDataByLastSyncDate", model.LastSyncDate);
-                    }
-                }
+                GetCall(model);
 
                 return Request.CreateResponse(HttpStatusCode.OK, model);
             }
@@ -78,9 +61,7 @@ namespace OfflineSync.Server.Controllers
         {
             try
             {
-                //model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
-
-                InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
+                PostCall(model);
 
                 return Request.CreateResponse(HttpStatusCode.OK, model);
             }
@@ -89,6 +70,8 @@ namespace OfflineSync.Server.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, CreateExceptionMessage(ex));
             }
         }
+
+        #endregion
 
         internal object InvokeDBMethod(string serverTableName, string serverAssemblyName,
             string methodName, object param)
@@ -139,6 +122,36 @@ namespace OfflineSync.Server.Controllers
             {
                 return ex.Message;
             }
+        }
+
+        public void GetCall(APIModel model)
+        {
+
+            if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)
+            {
+                InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                          "UpdateFailedTransactions", model);
+            }
+
+            if (model.AutoSync &&
+               (model.SyncType == SyncType.SyncTwoWay ||
+                model.SyncType == SyncType.SyncServerToClient))
+            {
+                if (model.LastSyncDate == null || model.LastSyncDate == DateTime.MinValue)
+                {
+                    model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "GetData", null);
+                }
+                else
+                {
+                    model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                        "GetDataByLastSyncDate", model.LastSyncDate);
+                }
+            }
+        }
+
+        public void PostCall(APIModel model)
+        {
+            InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
         }
     }
 }

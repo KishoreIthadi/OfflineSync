@@ -17,8 +17,19 @@ namespace OfflineSync.Client.Utilities
     {
         IDBOperations _dBOperations;
 
-        public SyncUtility()
+        ISyncAPIUtility _syncAPIUtility;
+
+        public SyncUtility(ISyncAPIUtility syncAPIUtility = null)
         {
+            if (syncAPIUtility == null)
+            {
+                _syncAPIUtility = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
+            }
+            else
+            {
+                _syncAPIUtility = syncAPIUtility;
+            }
+
             switch (SyncGlobalConfig.DBType)
             {
                 case ClientDBType.SQLite:
@@ -33,8 +44,6 @@ namespace OfflineSync.Client.Utilities
             {
                 List<ISyncSettingsBaseModel> settingslist = _dBOperations.GetSyncSettingByTable<ISyncSettingsBaseModel>(typeof(T).Name);
 
-                SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
-
                 // Having duplicate entries
                 if (settingslist == null)
                 {
@@ -43,10 +52,10 @@ namespace OfflineSync.Client.Utilities
                 else if (settingslist.Count > 1)
                 {
                     throw new Exception(StringUtility.DulplicateSettings);
-                }             
+                }
                 else
                 {
-                    ISyncSettingsBaseModel settings = settingslist[0];                    
+                    ISyncSettingsBaseModel settings = settingslist[0];
 
                     APIModel model = await GetAPIModel(settings);
 
@@ -70,7 +79,7 @@ namespace OfflineSync.Client.Utilities
                             url = model.ControllerRoute;
                         }
 
-                        model = await syncAPI.Post<APIModel, APIModel>(model, url);
+                        model = await _syncAPIUtility.Post<APIModel, APIModel>(model, url);
                     }
 
                     List<T> serverList = new List<T>();
@@ -262,14 +271,12 @@ namespace OfflineSync.Client.Utilities
 
         internal async Task<APIModel> FailedTransactionsSync(APIModel model, ISyncSettingsBaseModel syncSettingsModel, bool makeAPICall)
         {
-            SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
-
             APIModel res = model;
 
             // makeAPICall is false, The API call is already made and transation/version confilt occured
             if (makeAPICall)
             {
-                res = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.GetData);
+                res = await _syncAPIUtility.Post<APIModel, APIModel>(model, StringUtility.GetData);
             }
 
             /* 
@@ -336,15 +343,14 @@ namespace OfflineSync.Client.Utilities
         {
             List<T> clientList = (List<T>)model.Data;
 
-            if(isTransactionIDSet)
+            if (isTransactionIDSet)
             {
                 _dBOperations.SetTransationIDs(clientList, model.DeviceID);
             }
-          
-            //TODO Pagination
-            SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
 
-            var data = await syncAPI.Post<APIModel, APIModel>(model, StringUtility.PostData);
+            //TODO Pagination
+
+            var data = await _syncAPIUtility.Post<APIModel, APIModel>(model, StringUtility.PostData);
             /* 
               FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
               Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,

@@ -10,8 +10,19 @@ namespace OfflineSync.Client.Utilities
     {
         IDBOperations _dBOperations;
 
-        public DeviceIDUtility()
+        ISyncAPIUtility _syncAPIUtility;
+
+        public DeviceIDUtility(ISyncAPIUtility syncAPIUtility = null)
         {
+            if (syncAPIUtility == null)
+            {
+                _syncAPIUtility = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
+            }
+            else
+            {
+                _syncAPIUtility = syncAPIUtility;
+            }
+
             switch (SyncGlobalConfig.DBType)
             {
                 case ClientDBType.SQLite:
@@ -33,9 +44,7 @@ namespace OfflineSync.Client.Utilities
             // Get DeviceID from API
             if (deviceID == null)
             {
-                SyncAPIUtility syncAPI = new SyncAPIUtility(SyncGlobalConfig.APIUrl, SyncGlobalConfig.Token);
-
-                deviceID = await syncAPI.Get<string>(StringUtility.DeviceIDAPICall);
+                deviceID = await _syncAPIUtility.Get<string>(StringUtility.DeviceIDAPICall);
 
                 // saving the device id to configuration table
                 _dBOperations.InsertConfigurationsModel("DeviceID", deviceID);

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfflineSync.DomainModel.Utilities
 {
-    public class SyncAPIUtility
+    public class SyncAPIUtility : ISyncAPIUtility
     {
         //URL for api calls.
         private string _BaseURL;

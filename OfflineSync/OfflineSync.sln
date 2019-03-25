@@ -13,6 +13,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineSync.Client", "Offli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.FormsApp", "User.FormsApp\User.FormsApp.csproj", "{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{001FBC1A-9F5B-4339-93C1-82617D76F804}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineSync.Tests", "OfflineSync.Tests\OfflineSync.Tests.csproj", "{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,9 +45,18 @@ Global
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{076E98CE-B839-4BA3-9C2D-E09A64AE1F67} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
+		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
+		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45} = {001FBC1A-9F5B-4339-93C1-82617D76F804}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FD0E2417-3D4D-446E-B5F0-BF1F7CE57287}

@@ -66,6 +66,7 @@
     <Compile Include="Models\FailedRecordsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\StringUtility.cs" />
+    <Compile Include="Utilities\ISyncAPIUtility.cs" />
     <Compile Include="Utilities\SyncAPIUtility.cs" />
   </ItemGroup>
   <ItemGroup>
