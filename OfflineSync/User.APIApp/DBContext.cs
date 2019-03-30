@@ -1,5 +1,6 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
+using User.Server.SQLModels;
 
 namespace User.APIApp
 {

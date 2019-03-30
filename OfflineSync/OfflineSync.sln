@@ -15,9 +15,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.FormsApp", "User.Forms
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{001FBC1A-9F5B-4339-93C1-82617D76F804}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineSync.Tests", "OfflineSync.Tests\OfflineSync.Tests.csproj", "{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Client.SQLiteModels", "User.Client.SQLiteModels\User.Client.SQLiteModels.csproj", "{EA6A623F-B6B4-4544-9218-B111E82F7B29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User.Server.SQLModels", "User.Server.SQLModels\User.Server.SQLModels.csproj", "{BAB720D1-F4EF-4282-85D5-00403588964A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfflineSync.IntegrationTest", "OfflineSync.IntegrationTest\OfflineSync.IntegrationTest.csproj", "{77B13E68-A093-42A8-8EED-9FFA8F7BA75A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,10 +49,18 @@ Global
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA6A623F-B6B4-4544-9218-B111E82F7B29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA6A623F-B6B4-4544-9218-B111E82F7B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA6A623F-B6B4-4544-9218-B111E82F7B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA6A623F-B6B4-4544-9218-B111E82F7B29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAB720D1-F4EF-4282-85D5-00403588964A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAB720D1-F4EF-4282-85D5-00403588964A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAB720D1-F4EF-4282-85D5-00403588964A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAB720D1-F4EF-4282-85D5-00403588964A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77B13E68-A093-42A8-8EED-9FFA8F7BA75A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77B13E68-A093-42A8-8EED-9FFA8F7BA75A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77B13E68-A093-42A8-8EED-9FFA8F7BA75A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77B13E68-A093-42A8-8EED-9FFA8F7BA75A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,9 +68,14 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{076E98CE-B839-4BA3-9C2D-E09A64AE1F67} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
 		{C080DED9-D04A-4FB0-BD8B-02DC0E70A6CE} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
-		{C2EDBEA1-393A-414F-BDE1-02560C7D2F45} = {001FBC1A-9F5B-4339-93C1-82617D76F804}
+		{EA6A623F-B6B4-4544-9218-B111E82F7B29} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
+		{BAB720D1-F4EF-4282-85D5-00403588964A} = {3FDA460A-EE92-4A54-A4D6-51B3AC4CC2EC}
+		{77B13E68-A093-42A8-8EED-9FFA8F7BA75A} = {001FBC1A-9F5B-4339-93C1-82617D76F804}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FD0E2417-3D4D-446E-B5F0-BF1F7CE57287}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

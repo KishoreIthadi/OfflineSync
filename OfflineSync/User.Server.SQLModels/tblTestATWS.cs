@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using OfflineSync.Server.Models.SQLServer;
 
-namespace User.APIApp
+namespace User.Server.SQLModels
 {
-    public class tblTestSTC : ISQLSyncServerModel
+    public class tblTestATWS : ISQLSyncServerModel
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

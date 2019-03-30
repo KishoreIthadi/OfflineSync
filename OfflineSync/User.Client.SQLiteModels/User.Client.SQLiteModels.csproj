@@ -4,16 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{87C19377-247B-425A-8E15-F6924FE9DEFD}</ProjectGuid>
+    <ProjectGuid>{EA6A623F-B6B4-4544-9218-B111E82F7B29}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OfflineSync.DomainModel</RootNamespace>
-    <AssemblyName>OfflineSync.DomainModel</AssemblyName>
+    <RootNamespace>User.Client.SQLiteModels</RootNamespace>
+    <AssemblyName>User.Client.SQLiteModels</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="SQLite-net, Version=1.5.231.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\sqlite-net-pcl.1.5.231\lib\netstandard1.1\SQLite-net.dll</HintPath>
     </Reference>
@@ -61,13 +58,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\SyncType.cs" />
-    <Compile Include="Models\APIModel.cs" />
-    <Compile Include="Models\FailedRecordsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\StringUtility.cs" />
-    <Compile Include="Utilities\ISyncAPIUtility.cs" />
-    <Compile Include="Utilities\SyncAPIUtility.cs" />
+    <Compile Include="sqlite_master.cs" />
+    <Compile Include="tblTestACTS.cs" />
+    <Compile Include="tblTestACTSH.cs" />
+    <Compile Include="tblTestASTC.cs" />
+    <Compile Include="tblTestATWS.cs" />
+    <Compile Include="tblTestSTC.cs" />
+    <Compile Include="tblTestTWS.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OfflineSync.Client\OfflineSync.Client.csproj">
+      <Project>{2e40b1bd-b44b-481e-a753-59b6f4341bab}</Project>
+      <Name>OfflineSync.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OfflineSync.DomainModel\OfflineSync.DomainModel.csproj">
+      <Project>{87c19377-247b-425a-8e15-f6924fe9defd}</Project>
+      <Name>OfflineSync.DomainModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -124,7 +124,10 @@ namespace OfflineSync.Server.Controllers
             }
         }
 
-        public void GetCall(APIModel model)
+
+        #region TestMethods
+
+        public APIModel GetCall(APIModel model)
         {
 
             if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)
@@ -147,11 +150,22 @@ namespace OfflineSync.Server.Controllers
                         "GetDataByLastSyncDate", model.LastSyncDate);
                 }
             }
+
+            return model;
         }
 
-        public void PostCall(APIModel model)
+        public APIModel PostCall(APIModel model)
         {
             InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
+
+            return model;
         }
+
+        public string GetDeviceIDCall()
+        {
+            return _DBOperations.GetDeviceID();
+        }
+
+        #endregion
     }
 }

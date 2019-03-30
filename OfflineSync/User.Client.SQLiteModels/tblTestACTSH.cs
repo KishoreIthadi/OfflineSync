@@ -2,9 +2,9 @@
 using SQLite;
 using System;
 
-namespace User.FormsApp
+namespace User.Client.SQLiteModels
 {
-    class tblTestSTC : ISQLiteSyncClientModel
+    public class tblTestACTSH : ISQLiteSyncClientModel
     {
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; }

@@ -1,9 +1,10 @@
 ﻿using OfflineSync.Client.Models.SQLite;
 using SQLite;
 using System;
-namespace User.FormsApp
+
+namespace User.Client.SQLiteModels
 {
-    class tblTestACTS : ISQLiteSyncClientModel
+    public class tblTestASTC : ISQLiteSyncClientModel
     {
         [PrimaryKey, AutoIncrement]
         public int ID { get; set; }
