@@ -41,15 +41,15 @@ namespace OfflineSync.IntegrationTest.Utilities
         {
             _SyncSettings = new SyncSettingsUtility();
 
-            AddSetting(TestDataSource.ACTSHSettings);
-            AddSetting(TestDataSource.ACTSSettings);
-            AddSetting(TestDataSource.ASTCSettings);
-            AddSetting(TestDataSource.ATWSSettings);
-            AddSetting(TestDataSource.STCSettings);
-            AddSetting(TestDataSource.TWSSettings);
+            AddSetting(TestDataSourceClient.ACTSHSettings);
+            AddSetting(TestDataSourceClient.ACTSSettings);
+            AddSetting(TestDataSourceClient.ASTCSettings);
+            AddSetting(TestDataSourceClient.ATWSSettings);
+            AddSetting(TestDataSourceClient.STCSettings);
+            AddSetting(TestDataSourceClient.TWSSettings);
         }
 
-        public static void StartSyncing(SyncModelTypeEnum type)
+        public static void StartSync(SyncModelTypeEnum type)
         {
             switch (type)
             {

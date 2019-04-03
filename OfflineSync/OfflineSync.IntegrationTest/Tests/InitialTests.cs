@@ -7,6 +7,7 @@ using OfflineSync.Client.Models.SQLite;
 using System.Linq;
 using OfflineSync.IntegrationTest.Utilities;
 using User.Client.SQLiteModels;
+using OfflineSync.IntegrationTest.DB;
 
 namespace OfflineSync.IntegrationTest.Tests
 {
@@ -30,7 +31,6 @@ namespace OfflineSync.IntegrationTest.Tests
         public void InitialClientSetup()
         {
             TestUtility.AddSyncGlobalSettings();
-
             SQLiteDBOperations.DeleteClientDatabase();
 
             TestUtility.AddDeviceID();
@@ -74,7 +74,7 @@ namespace OfflineSync.IntegrationTest.Tests
 
             try
             {
-                TestUtility.AddSetting(TestDataSource.ACTSAutoSyncFalseVal);
+                TestUtility.AddSetting(TestDataSourceClient.ACTSAutoSyncFalseVal);
                 isValidating = false;
             }
             catch (Exception e)
@@ -97,7 +97,7 @@ namespace OfflineSync.IntegrationTest.Tests
             bool isValidating = true;
             try
             {
-                TestUtility.AddSetting(TestDataSource.ACTSHAutoSyncFalseVal);
+                TestUtility.AddSetting(TestDataSourceClient.ACTSHAutoSyncFalseVal);
                 isValidating = false;
             }
             catch (Exception e)
@@ -119,7 +119,7 @@ namespace OfflineSync.IntegrationTest.Tests
             bool isValidating = true;
             try
             {
-                TestUtility.AddSetting(TestDataSource.AutoSyncFalseControllerRouteDataVal);
+                TestUtility.AddSetting(TestDataSourceClient.AutoSyncFalseControllerRouteDataVal);
                 isValidating = false;
             }
             catch (Exception e)
@@ -141,8 +141,8 @@ namespace OfflineSync.IntegrationTest.Tests
             List<SQLiteSyncSettingsModel> DBsettings = SQLiteDBOperations.GetAllSyncSettings();
 
             List<SQLiteSyncSettingsModel> localSettings = new List<SQLiteSyncSettingsModel>
-            {TestDataSource.ACTSHSettings, TestDataSource.ACTSSettings, TestDataSource.ASTCSettings,
-            TestDataSource.ATWSSettings, TestDataSource.STCSettings, TestDataSource.TWSSettings};
+            {TestDataSourceClient.ACTSHSettings, TestDataSourceClient.ACTSSettings, TestDataSourceClient.ASTCSettings,
+            TestDataSourceClient.ATWSSettings, TestDataSourceClient.STCSettings, TestDataSourceClient.TWSSettings};
 
             bool val = true;
 
@@ -167,8 +167,7 @@ namespace OfflineSync.IntegrationTest.Tests
         {
             bool val = true;
 
-            SQLiteDBOperations.InsertRecord(new tblTestACTS {
-             StringType= "TestData", IntType=10, FloatType=10.01f, DateType =null });
+            SQLiteDBOperations.InsertRecords(new List<User.Client.SQLiteModels.tblTestACTS> { TestDataSourceClient.ACTSRecordOne });
 
             tblTestACTS rec = SQLiteDBOperations.GetAllRecords<tblTestACTS>().First();
 
