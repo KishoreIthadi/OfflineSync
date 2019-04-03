@@ -96,7 +96,7 @@ namespace User.FormsApp
                         ClientTableName = typeof(tblTestACTS).Name,
                         Priority = OveridePriority.LastUpdated,
                         SyncType = SyncType.SyncClientToServer,
-                        ServerAssemblyName = "User.APIApp",
+                        ServerAssemblyName = "User.Server.SQLModels",
                         ServerTableName = "tblTestACTS"
                     }
                     );
@@ -108,7 +108,7 @@ namespace User.FormsApp
                         ClientTableName = typeof(tblTestACTSH).Name,
                         Priority = OveridePriority.LastUpdated,
                         SyncType = SyncType.SyncClientToServerAndHardDelete,
-                        ServerAssemblyName = "User.APIApp",
+                        ServerAssemblyName = "User.Server.SQLModels",
                         ServerTableName = "tblTestACTSH"
                     }
                     );
@@ -120,7 +120,7 @@ namespace User.FormsApp
                         ClientTableName = typeof(tblTestASTC).Name,
                         Priority = OveridePriority.LastUpdated,
                         SyncType = SyncType.SyncServerToClient,
-                        ServerAssemblyName = "User.APIApp",
+                        ServerAssemblyName = "User.Server.SQLModels",
                         ServerTableName = "tblTestASTC"
                     }
                 );
@@ -132,7 +132,7 @@ namespace User.FormsApp
                        ClientTableName = typeof(tblTestATWS).Name,
                        Priority = OveridePriority.LastUpdated,
                        SyncType = SyncType.SyncTwoWay,
-                       ServerAssemblyName = "User.APIApp",
+                       ServerAssemblyName = "User.Server.SQLModels",
                        ServerTableName = "tblTestATWS"
                    }
                );
@@ -157,7 +157,7 @@ namespace User.FormsApp
                         Priority = OveridePriority.LastUpdated,
                         ControllerRoute = "Home/GetData",
                         SyncType = SyncType.SyncTwoWay,
-                        ServerAssemblyName = "User.APIApp",
+                        ServerAssemblyName = "User.Server.SQLModels",
                         ServerTableName = "tblTestTWS",
                         ControllerData = "tblTestTWS"
                     }
@@ -513,7 +513,7 @@ namespace User.FormsApp
 
         #region Server
 
-        const string _connString = "Server=.;User ID=sa;Password=Welcome@1234;DataBase=SyncDB";
+        const string _connString = "Server=.;Database=SyncDB;persist security info=True;Integrated Security = SSPI";
 
         private void btnServerAdd_Click(object sender, EventArgs e)
         {

@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.btnClientAddSettings = new System.Windows.Forms.Button();
             this.btnClientRefresh = new System.Windows.Forms.Button();
             this.dgvRecords = new System.Windows.Forms.DataGridView();
@@ -404,8 +404,8 @@
             this.dgvServerRecords.Margin = new System.Windows.Forms.Padding(2);
             this.dgvServerRecords.Name = "dgvServerRecords";
             this.dgvServerRecords.ReadOnly = true;
-            dataGridViewCellStyle2.NullValue = null;
-            this.dgvServerRecords.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle1.NullValue = null;
+            this.dgvServerRecords.RowsDefaultCellStyle = dataGridViewCellStyle1;
             this.dgvServerRecords.RowTemplate.Height = 24;
             this.dgvServerRecords.Size = new System.Drawing.Size(541, 444);
             this.dgvServerRecords.TabIndex = 42;
@@ -418,7 +418,6 @@
             this.txtClientName.Name = "txtClientName";
             this.txtClientName.Size = new System.Drawing.Size(197, 20);
             this.txtClientName.TabIndex = 5;
-            this.txtClientName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.txtClientName.TextChanged += new System.EventHandler(this.txtClientName_TextChanged);
             // 
             // textBox1

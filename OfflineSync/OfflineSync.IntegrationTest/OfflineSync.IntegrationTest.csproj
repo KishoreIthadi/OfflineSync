@@ -45,6 +45,7 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.4.0\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.dll</HintPath>
     </Reference>
@@ -100,18 +101,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataSources\TestDataSourceClient.cs" />
+    <Compile Include="DataSources\TestDataSourceServer.cs" />
+    <Compile Include="DB\SQLDBOperations.cs" />
+    <Compile Include="DB\SQLiteDBOperations.cs" />
     <Compile Include="Enums\SyncModelTypeEnum.cs" />
-    <Compile Include="TestDataSource.cs" />
+    <Compile Include="Models\SQLServer\tblSyncDevice.cs" />
+    <Compile Include="Models\SQLServer\tblSyncTransaction.cs" />
+    <Compile Include="Tests\ACTSHTest.cs" />
+    <Compile Include="Tests\ACTSTest.cs" />
     <Compile Include="Tests\InitialTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities\SQLDBOperations.cs" />
-    <Compile Include="Utilities\SQLiteDBOperations.cs" />
     <Compile Include="Utilities\SyncAPIUtilityTest.cs" />
     <Compile Include="Utilities\TestUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OfflineSync.Client\OfflineSync.Client.csproj">
