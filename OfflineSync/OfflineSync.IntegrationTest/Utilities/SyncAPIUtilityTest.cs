@@ -29,11 +29,12 @@ namespace OfflineSync.IntegrationTest.Utilities
             {
                 model = _syncController.GetCall(JsonConvert.DeserializeObject<APIModel>(jsonData));
             }
-            else if(route.Equals(StringUtility.PostData))
+            else if (route.Equals(StringUtility.PostData))
             {
                 model = _syncController.PostCall(JsonConvert.DeserializeObject<APIModel>(jsonData));
             }
-            return (U)(object)model;
+            jsonData = JsonConvert.SerializeObject(model);
+            return (U)(object)(JsonConvert.DeserializeObject<APIModel>(jsonData));
         }
     }
 }

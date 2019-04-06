@@ -5,9 +5,9 @@ namespace OfflineSync.IntegrationTest.DataSources
 {
     static class TestDataSourceServer
     {
-        public static tblTestACTS RecordOne = new tblTestACTS
+        public static tblTestACTS ACTSRecordOne = new tblTestACTS
         {
-            StringType = "Record One",
+            StringType = "Server Record One",
             IntType = 592,
             FloatType = 100.9399393233f,
             DateType = DateTime.Now

@@ -156,7 +156,15 @@ namespace OfflineSync.Server.Controllers
 
         public APIModel PostCall(APIModel model)
         {
-            InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
+            if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)
+            {
+                InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                          "UpdateFailedTransactions", model);
+            }
+            else
+            {
+                InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "InsertUpdate", model);
+            }
 
             return model;
         }

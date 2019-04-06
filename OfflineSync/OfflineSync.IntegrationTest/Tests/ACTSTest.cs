@@ -6,6 +6,7 @@ using OfflineSync.IntegrationTest.Utilities;
 using System.Threading;
 using OfflineSync.IntegrationTest.DataSources;
 using OfflineSync.IntegrationTest.DB;
+using User.Client.SQLiteModels;
 
 namespace OfflineSync.IntegrationTest.Tests
 {
@@ -41,8 +42,9 @@ namespace OfflineSync.IntegrationTest.Tests
         {
             SQLiteDBOperations.InsertRecords(new List<User.Client.SQLiteModels.tblTestACTS> { TestDataSourceClient.ACTSRecordOne });
             TestUtility.StartSync(SyncModelTypeEnum.tblTestACTS);
-
-            SQLiteDBOperations.UpdateRecordData<User.Client.SQLiteModels.tblTestACTS>(1, TestDataSourceClient.ACTSRecordTwo);
+            tblTestACTS rec = SQLiteDBOperations.GetRecord<tblTestACTS>(10);
+            rec.StringType = "Modified Data";
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(10, rec);
             TestUtility.StartSync(SyncModelTypeEnum.tblTestACTS);
 
             Assert.AreEqual(true, CheckClientSync());
@@ -79,7 +81,7 @@ namespace OfflineSync.IntegrationTest.Tests
         [TestMethod]
         public void VersionIDConflictTest()
         {
-            SQLiteDBOperations.InsertRecords(new List<User.Client.SQLiteModels.tblTestACTS> { TestDataSourceClient.ACTSRecordOne });
+            SQLiteDBOperations.InsertRecords(new List<tblTestACTS> { TestDataSourceClient.ACTSRecordOne, TestDataSourceClient.ACTSRecordTwo });
             VersionIDTestInitialize();
             TestUtility.StartSync(SyncModelTypeEnum.tblTestACTS);
             Assert.AreEqual(true, CheckClientSync());
@@ -89,9 +91,12 @@ namespace OfflineSync.IntegrationTest.Tests
         public void VersionIDConflictFailedTransactionServerStatusFalseTest()
         {
             FailedTransactionTestInitialize();
+
             SQLDBOperations.ResetServerTable<User.Server.SQLModels.tblTestACTS>();
             SQLDBOperations.SetSyncStatusFalse();
+
             VersionIDTestInitialize();
+
             TestUtility.StartSync(SyncModelTypeEnum.tblTestACTS);
             Assert.AreEqual(true, CheckClientSync());
         }
@@ -108,22 +113,43 @@ namespace OfflineSync.IntegrationTest.Tests
 
         public void FailedTransactionTestInitialize()
         {
-            SQLiteDBOperations.InsertRecords(new List<User.Client.SQLiteModels.tblTestACTS>
-            { TestDataSourceClient.ACTSRecordOne, TestDataSourceClient.ACTSRecordTwo });
+            SQLiteDBOperations.InsertRecords(new List<tblTestACTS>
+            { TestDataSourceClient.ACTSRecordOne, TestDataSourceClient.ACTSRecordTwo , TestDataSourceClient.ACTSRecordThree});
             TestUtility.StartSync(SyncModelTypeEnum.tblTestACTS);
+            string transactionID = SQLDBOperations.GetTransactionId(); 
 
-            SQLiteDBOperations.UpdateRecordData<User.Client.SQLiteModels.tblTestACTS>(1, TestDataSourceClient.ACTSRecordThree);
-            string transactionId = SQLDBOperations.GetTransactionId();
+            tblTestACTS rec = SQLiteDBOperations.GetRecord<tblTestACTS>(10);
+            rec.IsSynced = false;
+            rec.TransactionID = transactionID;
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(10, rec);
 
-            SQLiteDBOperations.UpdateRecordsAsFailed<User.Client.SQLiteModels.tblTestACTS>(new List<int> { 1, 2 }, transactionId);
+            rec = SQLiteDBOperations.GetRecord<tblTestACTS>(100);
+            rec.IsSynced = false;
+            rec.TransactionID = transactionID;
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(100, rec);
+
+            rec = SQLiteDBOperations.GetRecord<tblTestACTS>(1000);
+            rec.StringType = "Modified Data";
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(1000, rec);
         }
 
         public static void VersionIDTestInitialize()
         {
-            SQLDBOperations.InsertRecords(new List<User.Server.SQLModels.tblTestACTS> { TestDataSourceServer.RecordOne });
             Thread.Sleep(2000);
+
+            SQLDBOperations.InsertRecords(new List<User.Server.SQLModels.tblTestACTS> { TestDataSourceServer.ACTSRecordOne });
+
             string serverVersionId = SQLDBOperations.GetRecord<User.Server.SQLModels.tblTestACTS>(1).VersionID;
-            SQLiteDBOperations.SetVersionId<User.Client.SQLiteModels.tblTestACTS>(1, serverVersionId);
+
+            tblTestACTS rec = SQLiteDBOperations.GetRecord<tblTestACTS>(10);
+            rec.IsSynced = false;
+            rec.VersionID = serverVersionId;
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(10, rec);
+
+            rec = SQLiteDBOperations.GetRecord<tblTestACTS>(100);
+            rec.StringType = "Modified Data";
+            SQLiteDBOperations.UpdateRecordData<tblTestACTS>(100, rec);
+            //SQLiteDBOperations.SetVersionId<User.Client.SQLiteModels.tblTestACTS>(1, serverVersionId);
         }
 
         public bool CheckClientSync()

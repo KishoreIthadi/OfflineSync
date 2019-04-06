@@ -133,7 +133,7 @@ namespace OfflineSync.Client.Utilities
                                 //TODO need to check for null logic, if date can be null in any scenario
                                 var lastSyncedAt = ((List<T>)model.Data).OrderByDescending(m => m.SyncModifiedAt)
                                                   .FirstOrDefault().SyncModifiedAt;
-
+                                 
                                 _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
                             }
                         }
@@ -235,7 +235,7 @@ namespace OfflineSync.Client.Utilities
                     }
                 }
             }
-            catch
+            catch(Exception e)
             {
                 throw;
             }
@@ -298,7 +298,7 @@ namespace OfflineSync.Client.Utilities
 
                 if (conflictRec != null)
                 {
-                    _dBOperations.UpdateConflictedVersionIDs<T>(conflictRec, model);
+                    _dBOperations.UpdateConflictedVersionIDs<T>(conflictRec, res);
                 }
 
                 // If any other error occurs rather than duplicate transactionID, versionID
@@ -319,29 +319,29 @@ namespace OfflineSync.Client.Utilities
             DomainModel.Models.APIModel */
             if (res.FailedSyncRecords.Count > 0)//|| res.FailedTransactionIDs.Count > 0)
             {
-                model.FailedSyncRecords.Clear();
+                res.FailedSyncRecords.Clear();
                 //model.FailedTransactionIDs.Clear();
                 //model.FailedTrasationData = null;
-                await PostDataAsync(model, syncSettingsModel, false);
+                res = await PostDataAsync(res, syncSettingsModel, false);
                 //await StartSyncAsync();
             }
             else if (res.FailedTrasationData != null)
             {
                 var list = JsonConvert.DeserializeObject<List<T>>(res.FailedTrasationData.ToString());
-
+                res.FailedTrasationData = null;
                 List<string> transactionList = list.Select(m => m.TransactionID).Distinct().ToList();
 
                 // Settting IsSync as true,transationid as null in DB for 'serverList' records
                 // Deleting the local records if SyncClientToServerAndHardDelete
-                _dBOperations.UpdateTrasationSuccess<T>(transactionList, model.SyncType);
+                _dBOperations.UpdateTrasationSuccess<T>(transactionList, res.SyncType);
             }
 
             return res;
         }
 
-        internal async Task PostDataAsync(APIModel model, ISyncSettingsBaseModel settings, bool isTransactionIDSet)
+        internal async Task<APIModel> PostDataAsync(APIModel model, ISyncSettingsBaseModel settings, bool isTransactionIDSet)
         {
-            List<T> clientList = (List<T>)model.Data;
+            List<T> clientList = (List<T>) model.Data;
 
             if (isTransactionIDSet)
             {
@@ -350,22 +350,33 @@ namespace OfflineSync.Client.Utilities
 
             //TODO Pagination
 
-            var data = await _syncAPIUtility.Post<APIModel, APIModel>(model, StringUtility.PostData);
+            model = await _syncAPIUtility.Post<APIModel, APIModel>(model, StringUtility.PostData);
             /* 
               FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
               Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
               Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
               DomainModel.Models.APIModel
             */
-            if (data.FailedSyncRecords.Count > 0)//|| data.FailedTransactionIDs.Count> 0)
+            if (model.FailedSyncRecords.Count > 0)//|| data.FailedTransactionIDs.Count> 0)
             {
-                await FailedTransactionsSync(data, settings, false);
+                await FailedTransactionsSync(model, settings, false);
+            }
+            else if (model.FailedTrasationData != null)
+            {
+                clientList = JsonConvert.DeserializeObject<List<T>>(model.FailedTrasationData.ToString());
+                model.FailedTrasationData = null;
+                List<string> transactionList = clientList.Select(m => m.TransactionID).Distinct().ToList();
+
+                // Settting IsSync as true,transationid as null in DB for 'serverList' records
+                // Deleting the local records if SyncClientToServerAndHardDelete
+                _dBOperations.UpdateTrasationSuccess<T>(transactionList, model.SyncType);
             }
             else
             {
                 List<string> transactionList = clientList.Select(m => m.TransactionID).Distinct().ToList();
                 _dBOperations.UpdateTrasationSuccess<T>(transactionList, model.SyncType);
             }
+            return model;
         }
     }
 }
