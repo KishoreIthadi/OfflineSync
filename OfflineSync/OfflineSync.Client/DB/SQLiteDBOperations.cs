@@ -61,6 +61,7 @@ namespace OfflineSync.Client.DB
             Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
             DomainModel.Models.APIModel
         */
+
         /*public void UpdateConflictedTransationIDs<T>(List<string> failedTransactionIDs, APIModel model) where T : ISyncClientBaseModel, new()
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
@@ -386,13 +387,23 @@ namespace OfflineSync.Client.DB
                     dbRec.VersionID = versionID;
                     dbRec.IsSynced = false;
 
-                    data = (List<T>)model.Data;
+                    //data = (List<T>)model.Data;
+                    data = model.FailedTrasationData == null ?
+                           JsonConvert.DeserializeObject<List<T>>(model.Data.ToString()) :
+                           JsonConvert.DeserializeObject<List<T>>(model.FailedTrasationData.ToString());
 
                     data.Where(m => m.VersionID == rec.VersionID).First().VersionID = versionID;
 
                     conn.Update(dbRec);
                 }
-                model.Data = data;
+                if (model.FailedTrasationData != null)
+                {
+                    model.FailedTrasationData = data;
+                }
+                else
+                {
+                    model.Data = data;
+                }
             }
         }
     }

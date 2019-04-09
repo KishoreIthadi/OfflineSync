@@ -106,7 +106,7 @@ namespace OfflineSync.IntegrationTest.DB
             }
         }
 
-        public static T GetRecord<T>(int id)
+        public static T GetRecord<T>(int intType)
         {
             dynamic rec = null;
 
@@ -115,22 +115,22 @@ namespace OfflineSync.IntegrationTest.DB
                 switch (typeof(T).Name)
                 {
                     case "tblTestACTS":
-                        rec = conn.Table<tblTestACTS>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestACTS>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                     case "tblTestACTSH":
-                        rec = conn.Table<tblTestACTSH>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestACTSH>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                     case "tblTestASTC":
-                        rec = conn.Table<tblTestASTC>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestASTC>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                     case "tblTestATWS":
-                        rec = conn.Table<tblTestATWS>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestATWS>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                     case "tblTestSTC":
-                        rec = conn.Table<tblTestSTC>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestSTC>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                     case "tblTestTWS":
-                        rec = conn.Table<tblTestTWS>().ToList().Where(m => m.ID == id).FirstOrDefault();
+                        rec = conn.Table<tblTestTWS>().ToList().Where(m => m.IntType == intType).FirstOrDefault();
                         break;
                 }
             }
@@ -146,7 +146,7 @@ namespace OfflineSync.IntegrationTest.DB
             }
         }
 
-        public static void UpdateRecordData<T>(int id, dynamic obj)
+        public static void UpdateRecordData<T>(int id,dynamic obj)
         {
             using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
             {
@@ -155,51 +155,11 @@ namespace OfflineSync.IntegrationTest.DB
                 rec.IntType = obj.IntType;
                 rec.FloatType = obj.FloatType;
                 rec.DateType = obj.DateType;
-                conn.Update(rec);
-            }
-        }
-
-        public static void UpdateRecordsAsFailed<T>(List<int> idList, string TransactionId)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
-            {
-                foreach (int id in idList)
-                {
-                    dynamic rec = GetRecord<T>(id);
-                    rec.TransactionID = TransactionId;
-                    rec.IsSynced = false;
-                    conn.Update(rec);
-                }
-            }
-        }
-
-        public static void SetVersionId<T>(int id, string versionId)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
-            {
-                dynamic rec = GetRecord<T>(id);
-                rec.VersionID = versionId;
-                conn.Update(rec);
-            }
-        }
-
-        //  For ACTSH to be checked
-        public static void SetSyncCreatedAt<T>(int id, string syncCreatedAt)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
-            {
-                dynamic rec = GetRecord<T>(id);
-                rec.SyncCreatedAt = syncCreatedAt;
-                conn.Update(rec);
-            }
-        }
-
-        public static void SetSyncModifiedAt<T>(int id, string syncModifiedAt)
-        {
-            using (SQLiteConnection conn = new SQLiteConnection(SyncGlobalConfig.DBPath))
-            {
-                dynamic rec = GetRecord<T>(id);
-                rec.SyncModifiedAt = syncModifiedAt;
+                rec.VersionID = obj.VersionID;
+                rec.TransactionID = obj.TransactionID;
+                rec.SyncCreatedAt = obj.SyncCreatedAt;
+                rec.SyncModifiedAt = obj.SyncModifiedAt;
+                rec.IsSynced = obj.IsSynced;
                 conn.Update(rec);
             }
         }

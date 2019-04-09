@@ -127,7 +127,7 @@ namespace OfflineSync.IntegrationTest
         public static tblTestACTS ACTSRecordTwo = new tblTestACTS
         {
             StringType = "Record Two",
-            IntType = 10000,
+            IntType = 100,
             FloatType = 99.9999393f,
             DateType = DateTime.Now
         };
@@ -135,7 +135,7 @@ namespace OfflineSync.IntegrationTest
         public static tblTestACTS ACTSRecordThree = new tblTestACTS
         {
             StringType = "Record Three",
-            IntType = 592,
+            IntType = 1000,
             FloatType = 100.9399393233f,
             DateType = DateTime.Now
         };
