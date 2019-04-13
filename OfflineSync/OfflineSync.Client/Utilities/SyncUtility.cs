@@ -59,6 +59,56 @@ namespace OfflineSync.Client.Utilities
 
                     APIModel model = await GetAPIModel(settings);
 
+                    if (model.SyncType != SyncType.SyncClientToServer && model.SyncType != SyncType.SyncClientToServerAndHardDelete)
+                    {
+                        if (model.AutoSync)
+                        {
+                            string url = model.ControllerRoute;
+
+                            if (model.AutoSync)
+                            {
+                                url = StringUtility.GetData;
+                            }
+                            else
+                            {
+                                // Calling the client API method and fetching the data
+                                url = model.ControllerRoute;
+                            }
+                        }
+                    }
+
+                    do
+                    {
+                        model = await _syncAPIUtility.Post<APIModel, APIModel>(model, StringUtility.GetData);
+
+                        if (model.FailedTransaction != null)
+                        {
+                            if (model.FailedTransaction.IsServerSideTransSuccess)
+                            {
+                                _dBOperations.UpdateLastSync(settings.SyncSettingsID
+                                    , model.FailedTransaction.FailedTransactionMaxTimeStamp.Value);
+
+                            }
+
+                            _dBOperations.UpdateTrasationSuccess<T>(model.FailedTransaction.FailedTransactionID, model.SyncType);
+                        }
+
+                        List<T> serverList = new List<T>();
+                        List<T> insertList = new List<T>();
+                        List<T> modifiedList = new List<T>();
+
+                        if (model.Data != null)
+                        {
+                            serverList = JsonConvert.DeserializeObject<List<T>>(model.Data.ToString());
+                        }
+
+
+
+                    } while (model.PaginationModel.IsRecordsExists);
+
+
+
+
                     if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)
                     {
                         // The 'Data' property will be filled at API controller if 'AutoSync' is true
@@ -133,7 +183,7 @@ namespace OfflineSync.Client.Utilities
                                 //TODO need to check for null logic, if date can be null in any scenario
                                 var lastSyncedAt = ((List<T>)model.Data).OrderByDescending(m => m.SyncModifiedAt)
                                                   .FirstOrDefault().SyncModifiedAt;
-                                 
+
                                 _dBOperations.UpdateLastSync(settings.SyncSettingsID, Convert.ToDateTime(lastSyncedAt));
                             }
                         }
@@ -235,7 +285,7 @@ namespace OfflineSync.Client.Utilities
                     }
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw;
             }
@@ -247,10 +297,7 @@ namespace OfflineSync.Client.Utilities
 
             APIModel model = new APIModel();
 
-            if (settings.SyncType != SyncType.SyncServerToClient)
-            {
-                model.FailedTrasationData = _dBOperations.GetFailedTransactionData<T>();
-            }
+            model.FailedTransaction = _dBOperations.GetFailedTransactionDetails<T>();
 
             model.DeviceID = deviceID;
             model.LastSyncDate = Convert.ToDateTime(settings.LastSyncedAt);
@@ -265,6 +312,8 @@ namespace OfflineSync.Client.Utilities
                 model.ControllerData = settings.ControllerData;
                 model.ControllerRoute = settings.ControllerRoute;
             }
+
+            model.PaginationModel.Count = SyncGlobalConfig.PaginationMaxCount;
 
             return model;
         }
@@ -341,7 +390,7 @@ namespace OfflineSync.Client.Utilities
 
         internal async Task<APIModel> PostDataAsync(APIModel model, ISyncSettingsBaseModel settings, bool isTransactionIDSet)
         {
-            List<T> clientList = (List<T>) model.Data;
+            List<T> clientList = (List<T>)model.Data;
 
             if (isTransactionIDSet)
             {

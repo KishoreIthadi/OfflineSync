@@ -9,14 +9,16 @@ namespace OfflineSync.Server.DB
     {
         List<string> GetFailedTransactionInfo(List<string> transactionIDs, string deviceID);
 
-        List<T> GetData<T>() where T : class, ISQLSyncServerModel;
+        List<T> GetData<T>(int count) where T : class, ISQLSyncServerModel;
 
-        List<T> GetDataByLastSyncDate<T>(DateTime dt) where T : class, ISQLSyncServerModel;
+        List<T> GetDataByLastSyncDate<T>(DateTime dt, int count) where T : class, ISQLSyncServerModel;
 
         APIModel UpdateFailedTransactions<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
         APIModel InsertUpdate<T>(APIModel model) where T : class, ISQLSyncServerModel;
 
         string GetDeviceID();
+
+        bool CheckTransationStatus(string transactionID);
     }
 }

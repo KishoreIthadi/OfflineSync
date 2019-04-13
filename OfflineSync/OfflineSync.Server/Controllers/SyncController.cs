@@ -74,7 +74,7 @@ namespace OfflineSync.Server.Controllers
         #endregion
 
         internal object InvokeDBMethod(string serverTableName, string serverAssemblyName,
-            string methodName, object param)
+            string methodName, object[] param)
         {
             Assembly assembly = Assembly.Load(serverAssemblyName);
             Type classType = null;
@@ -128,6 +128,41 @@ namespace OfflineSync.Server.Controllers
         #region TestMethods
 
         public APIModel GetCall(APIModel model)
+        {
+            if (model.AutoSync &&
+               (model.SyncType == SyncType.SyncTwoWay ||
+                model.SyncType == SyncType.SyncServerToClient))
+            {
+                if (model.FailedTransaction != null && model.SyncType == SyncType.SyncTwoWay)
+                {
+                    bool result = (bool)InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                                  "CheckTransationStatus",new object[] { model.FailedTransaction.FailedTransactionID });
+
+                    DateTime? dateTime = result ? model.FailedTransaction.FailedTransactionMaxTimeStamp : model.LastSyncDate;
+
+                    model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                        "GetDataByLastSyncDate",new object[] { dateTime, model.PaginationModel.Count });
+
+                    model.FailedTransaction.IsServerSideTransSuccess = result;
+                }
+                else
+                {
+                    if (model.LastSyncDate == null || model.LastSyncDate == DateTime.MinValue)
+                    {
+                        model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName, "GetData", null);
+                    }
+                    else
+                    {
+                        model.Data = InvokeDBMethod(model.ServerTableName, model.ServerAssemblyName,
+                            "GetDataByLastSyncDate", new object[] { model.LastSyncDate, model.PaginationModel.Count });
+                    }
+                }
+            }
+
+            return model;
+        }
+
+        public APIModel GetCall1(APIModel model)
         {
 
             if (model.FailedTrasationData != null && model.SyncType != SyncType.SyncServerToClient)

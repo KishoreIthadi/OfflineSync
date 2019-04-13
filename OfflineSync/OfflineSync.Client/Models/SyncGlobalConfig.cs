@@ -8,5 +8,6 @@ namespace OfflineSync.Client.Models
         public static string DBPath { get; set; }
         public static string Token { get; set; }
         public static ClientDBType DBType { get; set; } = ClientDBType.SQLite;
+        public static int PaginationMaxCount { get; set; }
     }
 }

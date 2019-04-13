@@ -27,8 +27,11 @@ namespace OfflineSync.Client.DB
         void UpdateList<T>(IEnumerable<T> list) where T : ISyncClientBaseModel, new();
         void UpdateLastSync(int syncSettingsID, DateTime lastModified);
         void UpdateTrasationSuccess<T>(List<string> transactionList, SyncType syncType) where T : ISyncClientBaseModel, new();
+        void UpdateTrasationSuccess<T>(string transactionID, SyncType syncType) where T : ISyncClientBaseModel, new();
         void SetTransationIDs<T>(List<T> clientList, string deviceID) where T : ISyncClientBaseModel, new();
         void UpdateSyncSettingsModel(ISyncSettingsBaseModel model);
         void AddSyncSettingsModel(ISyncSettingsBaseModel model);
+        FailedTrasationModel GetFailedTransactionDetails<T>() where T : ISyncClientBaseModel, new();
+        void UpdateTrasation();
     }
 }

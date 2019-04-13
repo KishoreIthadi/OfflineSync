@@ -12,8 +12,6 @@ namespace OfflineSync.DomainModel.Models
             //FailedTransactionIDs = new List<string>();
         }
 
-        public object FailedTrasationData { get; set; }
-        //public List<string> FailedTransactionIDs { get; set; }
         public object Data { get; set; }
         public DateTime? LastSyncDate { get; set; }
         public string DeviceID { get; set; }
@@ -25,5 +23,7 @@ namespace OfflineSync.DomainModel.Models
         public string ServerTableName { get; set; }
         public SyncType SyncType { get; set; }
         public bool AutoSync { get; set; }
+        public FailedTrasationModel FailedTransaction { get; set; }
+        public PaginationModel PaginationModel { get; set; }
     }
 }

@@ -27,6 +27,71 @@ namespace OfflineSync.Server.DB
 
     internal class SQLServerDBOperations : IDBOperations
     {
+        public string GetDeviceID()
+        {
+            using (SQLContext<tblSyncDevice> db = new SQLContext<tblSyncDevice>())
+            {
+                string newID = Guid.NewGuid().ToString();
+
+                while (db.Set<tblSyncDevice>().Any(m => m.DeviceID == newID))
+                {
+                    newID = Guid.NewGuid().ToString();
+                }
+
+                db.dbSet.Add(new tblSyncDevice
+                {
+                    DeviceID = newID
+                });
+
+                db.SaveChanges();
+
+                return newID;
+            }
+        }
+
+        public List<T> GetData<T>(int count) where T : class, ISQLSyncServerModel
+        {
+            using (SQLContext<T> db = new SQLContext<T>())
+            {
+                var res = db.dbSet.OrderBy(m=>m.SyncModifiedAt).Take(count).ToList();
+
+                if (res.Count > 0) { return res; }
+
+                return null;
+            }
+        }
+
+        public List<T> GetDataByLastSyncDate<T>(DateTime dt, int count) where T : class, ISQLSyncServerModel
+        {
+            using (SQLContext<T> db = new SQLContext<T>())
+            {
+                var res = db.dbSet
+                            .Where(m => DateTime.Compare(dt, m.SyncModifiedAt.Value) < 0)
+                            .OrderBy(m => m.SyncModifiedAt)
+                            .Take(count)
+                            .ToList();
+
+                if (res.Count > 0) { return res; }
+
+                return null;
+            }
+        }
+
+        public bool CheckTransationStatus(string transactionID)
+        {
+            using (SQLContext<tblSyncTransaction> db = new SQLContext<tblSyncTransaction>())
+            {
+                var rec = db.dbSet.Where(m => m.TransactionID == transactionID).FirstOrDefault();
+
+                if (rec == null)
+                {
+                    return false;
+                }
+
+                return rec.Status;
+            }
+        }
+
         public List<string> GetFailedTransactionInfo(List<string> transactionIDs, string deviceID)
         {
             using (SQLContext<tblSyncTransaction> db = new SQLContext<tblSyncTransaction>())
@@ -49,30 +114,6 @@ namespace OfflineSync.Server.DB
                 db.SaveChanges();
 
                 if (failedTransactionList.Count > 0) { return failedTransactionList; }
-
-                return null;
-            }
-        }
-
-        public List<T> GetData<T>() where T : class, ISQLSyncServerModel
-        {
-            using (SQLContext<T> db = new SQLContext<T>())
-            {
-                var res = db.dbSet.ToList();
-
-                if (res.Count > 0) { return res; }
-
-                return null;
-            }
-        }
-
-        public List<T> GetDataByLastSyncDate<T>(DateTime dt) where T : class, ISQLSyncServerModel
-        {
-            using (SQLContext<T> db = new SQLContext<T>())
-            {
-                var res = db.dbSet.Where(m => DateTime.Compare(dt, m.SyncModifiedAt.Value) < 0).ToList();
-
-                if (res.Count > 0) { return res; }
 
                 return null;
             }
@@ -282,28 +323,6 @@ namespace OfflineSync.Server.DB
                 }
 
                 return model;
-            }
-        }
-
-        public string GetDeviceID()
-        {
-            using (SQLContext<tblSyncDevice> db = new SQLContext<tblSyncDevice>())
-            {
-                string newID = Guid.NewGuid().ToString();
-
-                while (db.Set<tblSyncDevice>().Any(m => m.DeviceID == newID))
-                {
-                    newID = Guid.NewGuid().ToString();
-                }
-
-                db.dbSet.Add(new tblSyncDevice
-                {
-                    DeviceID = newID
-                });
-
-                db.SaveChanges();
-
-                return newID;
             }
         }
     }

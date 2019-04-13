@@ -18,7 +18,7 @@ namespace OfflineSync.Client.DB
         public SQLiteDBOperations()
         {
             _DBPath = SyncGlobalConfig.DBPath;
-           
+
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
             {
                 conn.CreateTable<SQLiteConfigurationsModel>();
@@ -55,7 +55,7 @@ namespace OfflineSync.Client.DB
                 return null;
             }
         }
-       
+
         /* FailedTransactionIDs conflict is highly rare to occur, as TransactionID is combination of GUID + DeviceID + Ticks
             Uncomment Client.DB.SyncUtility.FailedTransactionsSync, Client.DB.SQLiteDBOPerations.UpdateConflictedTransationIDs,
             Client.DB.IDBOperations.UpdateConflictedTransationIDs, Client.DB.SyncUtility.PostDataAsync, Server.DB.SQLServerDBOperations.InsertUpdate
@@ -236,6 +236,25 @@ namespace OfflineSync.Client.DB
             }
         }
 
+        public void UpdateTrasationSuccess<T>(string transactionID, SyncType syncType) where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                var rec = conn.Table<T>().Where(m => m.TransactionID == transactionID).FirstOrDefault();
+
+                if (syncType == SyncType.SyncClientToServerAndHardDelete)
+                {
+                    conn.Delete(rec);
+                }
+                else
+                {
+                    rec.IsSynced = true;
+                    rec.TransactionID = null;
+                    conn.Update(rec);
+                }
+            }
+        }
+
         public void SetTransationIDs<T>(List<T> clientList, string deviceID) where T : ISyncClientBaseModel, new()
         {
             using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
@@ -272,12 +291,12 @@ namespace OfflineSync.Client.DB
                     if (item.TransactionID == null)
                     {
                         item.TransactionID = transactionID;
-                    }                    
+                    }
                     conn.Update(item);
                 }
 
-            }          
-            
+            }
+
         }
 
         public void UpdateSyncSettingsModel(ISyncSettingsBaseModel model)
@@ -404,6 +423,23 @@ namespace OfflineSync.Client.DB
                 {
                     model.Data = data;
                 }
+            }
+        }
+
+        public FailedTrasationModel GetFailedTransactionDetails<T>() where T : ISyncClientBaseModel, new()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(_DBPath))
+            {
+                FailedTrasationModel failedTrasationModel = new FailedTrasationModel();
+
+                failedTrasationModel.FailedTransactionID = conn.Table<T>()
+                    .Where(m => m.TransactionID != null).First().TransactionID;
+
+                failedTrasationModel.FailedTransactionMaxTimeStamp = Convert.ToDateTime(conn.Table<SQLiteTransactionsModel>()
+                                     .Where(m => m.TransactionID == failedTrasationModel.FailedTransactionID)
+                                     .First().MaxDateTime);
+
+                return failedTrasationModel;
             }
         }
     }
